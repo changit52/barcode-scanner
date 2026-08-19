@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>รายการอุปกรณ์ รพ.ผศ. (Asset Scanner & OCR)</title>
+  <title>บันทึกชุดคอมพิวเตอร์ รพ.ผศ. (IT Set Scanner)</title>
   
   <!-- ไลบรารีสแกนบาร์โค้ด & QR Code -->
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -13,10 +13,10 @@
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #f0f2f5; margin: 0; padding: 10px; }
-    .container { max-width: 600px; margin: 0 auto; }
+    .container { max-width: 650px; margin: 0 auto; }
     .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     h2 { margin: 0 0 4px 0; font-size: 1.15rem; text-align: center; color: #1a237e; }
-    .sub-title { font-size: 0.85rem; text-align: center; color: #666; margin-bottom: 10px; }
+    .sub-title { font-size: 0.85rem; text-align: center; color: #666; margin-bottom: 8px; }
     
     #reader { width: 100%; border-radius: 8px; overflow: hidden; background: #000; }
     
@@ -83,8 +83,8 @@
 
 <div class="container">
   <div class="card" style="padding-bottom: 8px;">
-    <h2>📋 รายการอุปกรณ์ รพ.ผศ.</h2>
-    <div class="sub-title">ระบบสแกนบาร์โค้ด & ถ่ายรูปแปลงข้อความ (OCR)</div>
+    <h2>📋 บันทึกชุดอุปกรณ์ รพ.ผศ.</h2>
+    <div class="sub-title">1 ชุด = ครุภัณฑ์ + จอภาพ + Mini PC + เมาส์/คีย์บอร์ด + UPS</div>
     <div id="reader"></div>
     <div id="stepInfo" class="status-step">👉 พร้อมรับข้อมูล: [เลขครุภัณฑ์]</div>
   </div>
@@ -96,7 +96,7 @@
       📸 ถ่ายรูปอ่านตัวหนังสือ/ตัวเลข (OCR) ลงช่องที่เลือก
     </button>
 
-    <!-- ข้อมูลสถานที่ -->
+    <!-- ข้อมูลสถานที่ (จำค่าไว้ ไม่ลบเมื่อกดบันทึก) -->
     <div class="row">
       <div class="col form-group">
         <label>📍 อาคาร / ชั้น</label>
@@ -108,61 +108,65 @@
       </div>
     </div>
 
-    <!-- 1. ช่อง รายการ (ชนิดอุปกรณ์) -->
-    <div class="form-group">
-      <label>📦 รายการ (ชนิดอุปกรณ์)</label>
-      <input type="text" id="item_name" placeholder="ระบุรายการ หรือกดปุ่มลัด">
-      <div class="quick-chips">
-        <button type="button" class="chip" onclick="setItem('Mini PC')">💻 Mini PC</button>
-        <button type="button" class="chip" onclick="setItem('จอภาพ (Monitor)')">🖥️ จอภาพ</button>
-        <button type="button" class="chip" onclick="setItem('เมาส์ & คีย์บอร์ด')">⌨️ เมาส์+คีย์บอร์ด</button>
-        <button type="button" class="chip" onclick="setItem('เครื่องสำรองไฟ (UPS)')">🔋 UPS</button>
-        <button type="button" class="chip" onclick="setItem('เครื่องพิมพ์ (Printer)')">🖨️ เครื่องพิมพ์</button>
+    <div class="row">
+      <div class="col form-group">
+        <label>🏷️ ยี่ห้อ (Brand)</label>
+        <input type="text" id="brand" placeholder="ระบุยี่ห้อ หรือกดปุ่มลัด">
+        <div class="quick-chips">
+          <button type="button" class="chip" onclick="setBrand('Dell')">Dell</button>
+          <button type="button" class="chip" onclick="setBrand('HP')">HP</button>
+          <button type="button" class="chip" onclick="setBrand('Lenovo')">Lenovo</button>
+          <button type="button" class="chip" onclick="setBrand('Acer')">Acer</button>
+        </div>
+      </div>
+      <div class="col form-group">
+        <label>🔢 เลขครุภัณฑ์</label>
+        <input type="text" id="asset_id" class="scan-target" placeholder="สแกน/ถ่ายรูป/พิมพ์" onclick="setScanTarget('asset_id')">
       </div>
     </div>
 
-    <!-- 2. ช่อง ยี่ห้อ -->
-    <div class="form-group">
-      <label>🏷️ ยี่ห้อ (Brand)</label>
-      <input type="text" id="brand" placeholder="เช่น Dell, HP, Lenovo, APC, Samsung">
-      <div class="quick-chips">
-        <button type="button" class="chip" onclick="setBrand('Dell')">Dell</button>
-        <button type="button" class="chip" onclick="setBrand('HP')">HP</button>
-        <button type="button" class="chip" onclick="setBrand('Lenovo')">Lenovo</button>
-        <button type="button" class="chip" onclick="setBrand('APC')">APC</button>
-        <button type="button" class="chip" onclick="setBrand('Logitech')">Logitech</button>
+    <!-- ส่วน S/N ของอุปกรณ์ทั้ง 4 ชิ้นในชุด -->
+    <div style="background:#f8f9fa; border:1px dashed #bbb; border-radius:8px; padding:10px; margin: 8px 0;">
+      <div style="font-weight:bold; font-size:0.85rem; color:#1a237e; margin-bottom:6px;">📦 ข้อมูล S/N อุปกรณ์ในชุด (แตะช่องเพื่อเลือกยิงได้)</div>
+      
+      <div class="form-group">
+        <label>🖥️ 1. S/N จอภาพ (Monitor)</label>
+        <input type="text" id="sn_monitor" placeholder="สแกนหรือถ่ายรูป S/N จอ" onclick="setScanTarget('sn_monitor')">
+      </div>
+
+      <div class="form-group">
+        <label>💻 2. S/N เครื่อง Mini PC</label>
+        <input type="text" id="sn_minipc" placeholder="สแกนหรือถ่ายรูป S/N Mini PC" onclick="setScanTarget('sn_minipc')">
+      </div>
+
+      <div class="form-group">
+        <label>⌨️🖱️ 3. S/N เมาส์ & คีย์บอร์ด</label>
+        <input type="text" id="sn_kbm" placeholder="สแกนหรือถ่ายรูป S/N เมาส์+คีย์บอร์ด" onclick="setScanTarget('sn_kbm')">
+      </div>
+
+      <div class="form-group">
+        <label>🔋 4. S/N เครื่องสำรองไฟ (UPS)</label>
+        <input type="text" id="sn_ups" placeholder="สแกนหรือถ่ายรูป S/N UPS" onclick="setScanTarget('sn_ups')">
       </div>
     </div>
 
-    <!-- 3. ช่อง เลขครุภัณฑ์ -->
-    <div class="form-group">
-      <label>🔢 เลขครุภัณฑ์ (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
-      <input type="text" id="asset_id" class="scan-target" placeholder="สแกน, ถ่ายรูป หรือพิมพ์เลขครุภัณฑ์" onclick="setScanTarget('asset_id')">
-    </div>
-
-    <!-- 4. ช่อง S/N -->
-    <div class="form-group">
-      <label>📷 S/N (Serial Number) (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
-      <input type="text" id="serial_no" placeholder="สแกน, ถ่ายรูป หรือพิมพ์ S/N" onclick="setScanTarget('serial_no')">
-    </div>
-
-    <!-- 5. หมายเหตุ -->
+    <!-- หมายเหตุ -->
     <div class="form-group">
       <label>📝 หมายเหตุ</label>
-      <input type="text" id="remark" placeholder="เช่น ยืมใช้งาน, ชำรุด, ครบชุด">
+      <input type="text" id="remark" placeholder="เช่น ใช้งานปกติ, ยืมชั่วคราว, รอเปลี่ยนแบต">
     </div>
 
     <div class="btn-group">
-      <button class="btn-clear-sn" type="button" id="btnClear" onclick="clearItemFields()">ล้างช่องข้อมูล</button>
+      <button class="btn-clear-sn" type="button" id="btnClear" onclick="clearItemFields()">ล้างค่าชุดนี้</button>
       <button class="btn-cancel" type="button" id="btnCancelEdit" onclick="cancelEdit()">ยกเลิกแก้ไข</button>
-      <button class="btn-save" type="button" id="btnSave" onclick="saveData()">💾 บันทึกข้อมูล (Add)</button>
+      <button class="btn-save" type="button" id="btnSave" onclick="saveData()">💾 บันทึกข้อมูลทั้งชุด (Add)</button>
     </div>
   </div>
 
   <!-- ตารางข้อมูล -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <strong>ตารางบันทึกข้อมูล (<span id="totalCount">0</span> รายการ)</strong>
+      <strong>ตารางบันทึกชุดคอมพิวเตอร์ (<span id="totalCount">0</span> ชุด)</strong>
     </div>
     <button class="btn-export" onclick="exportToCSV()">📥 ดาวน์โหลดไฟล์ Excel (CSV)</button>
     
@@ -172,12 +176,14 @@
           <tr>
             <th>จัดการ</th>
             <th>ลำดับ</th>
-            <th>รายการ</th>
-            <th>ยี่ห้อ</th>
             <th>เลขครุภัณฑ์</th>
             <th>อาคาร / ชั้น</th>
             <th>แผนก / จุดใช้งาน</th>
-            <th>S/N (Serial Number)</th>
+            <th>ยี่ห้อ</th>
+            <th>S/N จอภาพ</th>
+            <th>S/N Mini PC</th>
+            <th>S/N เมาส์/คีย์บอร์ด</th>
+            <th>S/N UPS</th>
             <th>หมายเหตุ</th>
           </tr>
         </thead>
@@ -188,14 +194,20 @@
 </div>
 
 <script>
-  let targetFieldId = 'asset_id'; // ช่องเป้าหมายเริ่มต้น
+  // ลำดับช่องที่จะให้เคอร์เซอร์วิ่งไปอัตโนมัติเมื่อยิงบาร์โค้ด
+  const scanSequence = ['asset_id', 'sn_monitor', 'sn_minipc', 'sn_kbm', 'sn_ups'];
+  const fieldLabels = {
+    'asset_id': 'เลขครุภัณฑ์',
+    'sn_monitor': 'S/N จอภาพ',
+    'sn_minipc': 'S/N Mini PC',
+    'sn_kbm': 'S/N เมาส์ & คีย์บอร์ด',
+    'sn_ups': 'S/N UPS'
+  };
+
+  let targetFieldId = 'asset_id';
   let records = [];
   let editIndex = -1;
   let isCooldown = false;
-
-  function setItem(name) {
-    document.getElementById('item_name').value = name;
-  }
 
   function setBrand(name) {
     document.getElementById('brand').value = name;
@@ -203,12 +215,14 @@
 
   function setScanTarget(fieldId) {
     targetFieldId = fieldId;
-    document.getElementById('asset_id').classList.remove('scan-target');
-    document.getElementById('serial_no').classList.remove('scan-target');
+    scanSequence.forEach(id => {
+      document.getElementById(id).classList.remove('scan-target');
+    });
     
     document.getElementById(fieldId).classList.add('scan-target');
-    const labelName = fieldId === 'asset_id' ? 'เลขครุภัณฑ์' : 'S/N (Serial Number)';
-    document.getElementById('stepInfo').innerText = `👉 พร้อมรับข้อมูล: [${labelName}]`;
+    document.getElementById('stepInfo').innerText = `👉 พร้อมรับข้อมูล: [${fieldLabels[fieldId] || fieldId}]`;
+    document.getElementById('stepInfo').style.background = "#e8eaf6";
+    document.getElementById('stepInfo').style.color = "#283593";
   }
 
   function playBeep() {
@@ -228,14 +242,19 @@
     playBeep();
     isCooldown = true;
 
-    document.getElementById(targetFieldId).value = decodedText.trim();
-    document.getElementById('stepInfo').innerText = `✅ สแกนสำเร็จ: ${decodedText.trim()}`;
+    const val = decodedText.trim();
+    document.getElementById(targetFieldId).value = val;
+
+    document.getElementById('stepInfo').innerText = `✅ บันทึก [${fieldLabels[targetFieldId]}]: ${val}`;
     document.getElementById('stepInfo').style.background = "#c8e6c9";
     document.getElementById('stepInfo').style.color = "#2e7d32";
 
-    // สลับช่องอัตโนมัติถ้าสแกนเลขครุภัณฑ์เสร็จ
-    if (targetFieldId === 'asset_id') {
-      setTimeout(() => { setScanTarget('serial_no'); }, 500);
+    // เลื่อนไปยังช่องถัดไปในลำดับอัตโนมัติ
+    const currentIndex = scanSequence.indexOf(targetFieldId);
+    if (currentIndex >= 0 && currentIndex < scanSequence.length - 1) {
+      setTimeout(() => {
+        setScanTarget(scanSequence[currentIndex + 1]);
+      }, 500);
     }
 
     setTimeout(() => { isCooldown = false; }, 1000);
@@ -253,17 +272,22 @@
 
     try {
       const result = await Tesseract.recognize(file, 'eng+tha');
-      let text = result.data.text.trim();
-      text = text.replace(/\r?\n|\r/g, " ").trim();
+      let text = result.data.text.trim().replace(/\r?\n|\r/g, " ");
 
       if (text) {
         document.getElementById(targetFieldId).value = text;
-        statusEl.innerText = `✅ แปลงข้อความสำเร็จ: ${text.substring(0, 25)}...`;
+        statusEl.innerText = `✅ OCR สำเร็จ: ${text.substring(0, 25)}...`;
         statusEl.style.background = "#c8e6c9";
         statusEl.style.color = "#2e7d32";
         playBeep();
+
+        // เลื่อนไปช่องถัดไป
+        const currentIndex = scanSequence.indexOf(targetFieldId);
+        if (currentIndex >= 0 && currentIndex < scanSequence.length - 1) {
+          setTimeout(() => { setScanTarget(scanSequence[currentIndex + 1]); }, 500);
+        }
       } else {
-        statusEl.innerText = "⚠️ ไม่พบข้อความในภาพ กรุณาถ่ายให้ชัดเจนขึ้น";
+        statusEl.innerText = "⚠️ ไม่พบข้อความในภาพ กรุณาถ่ายใหม่ให้ชัดเจน";
         statusEl.style.background = "#ffebee";
         statusEl.style.color = "#c62828";
       }
@@ -275,7 +299,7 @@
     }
   }
 
-  // วาดตารางข้อมูลใหม่
+  // วาดตารางข้อมูล
   function renderTable() {
     const tbody = document.getElementById('dataTableBody');
     tbody.innerHTML = "";
@@ -288,12 +312,14 @@
           <button type="button" class="btn-action btn-delete" onclick="deleteRecord(${index})">🗑️</button>
         </td>
         <td style="text-align:center;">${index + 1}</td>
-        <td><strong>${r.item_name}</strong></td>
-        <td>${r.brand}</td>
-        <td>${r.asset_id}</td>
+        <td><strong>${r.asset_id}</strong></td>
         <td>${r.building}</td>
         <td>${r.dept}</td>
-        <td><strong>${r.serial_no}</strong></td>
+        <td>${r.brand}</td>
+        <td>${r.sn_monitor}</td>
+        <td>${r.sn_minipc}</td>
+        <td>${r.sn_kbm}</td>
+        <td>${r.sn_ups}</td>
         <td>${r.remark}</td>
       `;
       tbody.appendChild(tr);
@@ -303,16 +329,18 @@
   }
 
   function saveData() {
-    const building  = document.getElementById('building').value.trim();
-    const dept      = document.getElementById('dept').value.trim();
-    const item_name = document.getElementById('item_name').value.trim();
-    const brand     = document.getElementById('brand').value.trim();
-    const asset_id  = document.getElementById('asset_id').value.trim();
-    const serial_no = document.getElementById('serial_no').value.trim();
-    const remark    = document.getElementById('remark').value.trim();
+    const building   = document.getElementById('building').value.trim();
+    const dept       = document.getElementById('dept').value.trim();
+    const brand      = document.getElementById('brand').value.trim();
+    const asset_id   = document.getElementById('asset_id').value.trim();
+    const sn_monitor = document.getElementById('sn_monitor').value.trim();
+    const sn_minipc  = document.getElementById('sn_minipc').value.trim();
+    const sn_kbm     = document.getElementById('sn_kbm').value.trim();
+    const sn_ups     = document.getElementById('sn_ups').value.trim();
+    const remark     = document.getElementById('remark').value.trim();
 
-    if (!serial_no && !asset_id) {
-      alert("กรุณาระบุ 'เลขครุภัณฑ์' หรือ 'S/N' อย่างน้อย 1 อย่าง");
+    if (!asset_id && !sn_minipc && !sn_monitor) {
+      alert("กรุณาระบุ 'เลขครุภัณฑ์' หรือ 'S/N' อย่างน้อย 1 รายการก่อนบันทึก");
       return;
     }
 
@@ -321,12 +349,12 @@
     if (editIndex >= 0) {
       records[editIndex] = {
         ...records[editIndex],
-        building, dept, item_name, brand, asset_id, serial_no, remark
+        building, dept, brand, asset_id, sn_monitor, sn_minipc, sn_kbm, sn_ups, remark
       };
       cancelEdit();
     } else {
       records.push({
-        item_name, brand, asset_id, building, dept, serial_no, remark, time: now
+        asset_id, building, dept, brand, sn_monitor, sn_minipc, sn_kbm, sn_ups, remark, time: now
       });
       clearItemFields();
       setScanTarget('asset_id');
@@ -341,10 +369,12 @@
 
     document.getElementById('building').value = r.building;
     document.getElementById('dept').value = r.dept;
-    document.getElementById('item_name').value = r.item_name;
     document.getElementById('brand').value = r.brand;
     document.getElementById('asset_id').value = r.asset_id;
-    document.getElementById('serial_no').value = r.serial_no;
+    document.getElementById('sn_monitor').value = r.sn_monitor;
+    document.getElementById('sn_minipc').value = r.sn_minipc;
+    document.getElementById('sn_kbm').value = r.sn_kbm;
+    document.getElementById('sn_ups').value = r.sn_ups;
     document.getElementById('remark').value = r.remark;
 
     document.getElementById('btnSave').innerText = "🔄 บันทึกการแก้ไข (Update)";
@@ -352,14 +382,14 @@
     document.getElementById('btnCancelEdit').style.display = "block";
     document.getElementById('btnClear').style.display = "none";
 
-    document.getElementById('stepInfo').innerText = `✏️ กำลังแก้ไขรายการลำดับที่ ${index + 1}`;
+    document.getElementById('stepInfo').innerText = `✏️ กำลังแก้ไขชุดคอมพิวเตอร์ลำดับที่ ${index + 1}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function cancelEdit() {
     editIndex = -1;
     clearItemFields();
-    document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูล (Add)";
+    document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูลทั้งชุด (Add)";
     document.getElementById('btnSave').style.background = "#2e7d32";
     document.getElementById('btnCancelEdit').style.display = "none";
     document.getElementById('btnClear').style.display = "block";
@@ -367,7 +397,7 @@
   }
 
   function deleteRecord(index) {
-    if (confirm(`คุณต้องการลบรายการลำดับที่ ${index + 1} ใช่หรือไม่?`)) {
+    if (confirm(`คุณต้องการลบข้อมูลชุดลำดับที่ ${index + 1} ใช่หรือไม่?`)) {
       records.splice(index, 1);
       if (editIndex === index) cancelEdit();
       renderTable();
@@ -375,10 +405,11 @@
   }
 
   function clearItemFields() {
-    document.getElementById('item_name').value = '';
-    document.getElementById('brand').value = '';
     document.getElementById('asset_id').value = '';
-    document.getElementById('serial_no').value = '';
+    document.getElementById('sn_monitor').value = '';
+    document.getElementById('sn_minipc').value = '';
+    document.getElementById('sn_kbm').value = '';
+    document.getElementById('sn_ups').value = '';
     document.getElementById('remark').value = '';
   }
 
@@ -389,17 +420,17 @@
       return;
     }
 
-    let csv = "\uFEFFลำดับ,รายการ,ยี่ห้อ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,S/N (Serial Number),หมายเหตุ,เวลาบันทึก\n";
+    let csv = "\uFEFFลำดับ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N จอภาพ,S/N Mini PC,S/N เมาส์และคีย์บอร์ด,S/N UPS,หมายเหตุ,เวลาบันทึก\n";
     
     records.forEach((r, idx) => {
-      csv += `"${idx + 1}","${r.item_name}","${r.brand}","${r.asset_id}","${r.building}","${r.dept}","${r.serial_no}","${r.remark}","${r.time || ''}"\n`;
+      csv += `"${idx + 1}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.sn_monitor}","${r.sn_minipc}","${r.sn_kbm}","${r.sn_ups}","${r.remark}","${r.time || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `รายการอุปกรณ์_รพ_ผศ_${new Date().toISOString().slice(0,10)}.csv`;
+    link.download = `ชุดอุปกรณ์คอมพิวเตอร์_รพ_ผศ_${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
