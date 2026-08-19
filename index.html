@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>รายการอุปกรณ์ รพ.ผศ. (Asset Scanner)</title>
+  
+  <!-- ไลบรารีสแกนบาร์โค้ด & QR Code -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f0f2f5; margin: 0; padding: 10px; }
+    .container { max-width: 550px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    h2 { margin: 0 0 6px 0; font-size: 1.15rem; text-align: center; color: #1a237e; }
+    .sub-title { font-size: 0.85rem; text-align: center; color: #666; margin-bottom: 10px; }
+    
+    #reader { width: 100%; border-radius: 8px; overflow: hidden; background: #000; }
+    
+    .status-step {
+      background: #e8eaf6; color: #283593; padding: 8px;
+      border-radius: 6px; font-weight: bold; text-align: center; margin: 8px 0;
+      font-size: 0.9rem;
+    }
+    
+    .row { display: flex; gap: 8px; }
+    .col { flex: 1; }
+    
+    .form-group { margin-bottom: 8px; }
+    label { display: block; font-size: 0.8rem; font-weight: bold; color: #444; margin-bottom: 3px; }
+    input[type="text"], select {
+      width: 100%; padding: 8px; border: 1px solid #ccc;
+      border-radius: 6px; font-size: 0.9rem; background: #fff;
+    }
+    
+    /* สไตล์ช่องที่กำลังรอยิงบาร์โค้ด */
+    .scan-target {
+      background: #fffde7 !important;
+      border-color: #fbc02d !important;
+      box-shadow: 0 0 5px rgba(251, 192, 45, 0.6);
+      cursor: pointer;
+    }
+    
+    .quick-chips { display: flex; gap: 4px; overflow-x: auto; margin-top: 4px; padding-bottom: 2px; }
+    .chip {
+      background: #e0e0e0; border: none; padding: 4px 8px; border-radius: 12px;
+      font-size: 0.75rem; white-space: nowrap; cursor: pointer;
+    }
+    .chip:active { background: #bdbdbd; }
+    
+    .btn-group { display: flex; gap: 6px; margin-top: 10px; }
+    button {
+      flex: 1; padding: 10px; border: none; border-radius: 6px;
+      font-size: 0.9rem; font-weight: bold; cursor: pointer;
+    }
+    .btn-save { background: #2e7d32; color: #fff; }
+    .btn-clear-sn { background: #757575; color: #fff; }
+    .btn-export { background: #0288d1; color: #fff; width: 100%; margin-top: 6px; padding: 10px; }
+    
+    table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 8px; }
+    th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+    th { background: #f5f5f5; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card" style="padding-bottom: 8px;">
+    <h2>📋 รายการอุปกรณ์ รพ.ผศ.</h2>
+    <div class="sub-title">ระบบสแกนและบันทึกข้อมูลครุภัณฑ์</div>
+    <div id="reader"></div>
+    <div id="stepInfo" class="status-step">👉 พร้อมสแกน: [S/N (Serial Number)]</div>
+  </div>
+
+  <div class="card">
+    <!-- ข้อมูลสถานที่ (ระบบจะคงค่าไว้ ไม่ลบทิ้งเมื่อบันทึก) -->
+    <div class="row">
+      <div class="col form-group">
+        <label>📍 อาคาร / ชั้น</label>
+        <input type="text" id="building" placeholder="เช่น อาคาร 1 ชั้น 3">
+      </div>
+      <div class="col form-group">
+        <label>🏢 แผนก / จุดใช้งาน</label>
+        <input type="text" id="dept" placeholder="เช่น แผนกฉุกเฉิน (ER)">
+      </div>
+    </div>
+
+    <!-- ข้อมูลอุปกรณ์ -->
+    <div class="form-group">
+      <label>🏷️ ยี่ห้อ / อุปกรณ์</label>
+      <input type="text" id="brand" placeholder="ระบุยี่ห้อ หรือเลือกปุ่มลัดด้านล่าง">
+      <!-- ปุ่มลัดสำหรับเลือกอุปกรณ์อย่างรวดเร็ว -->
+      <div class="quick-chips">
+        <button type="button" class="chip" onclick="setBrand('Mini PC')">💻 Mini PC</button>
+        <button type="button" class="chip" onclick="setBrand('จอ Monitor')">🖥️ จอ Monitor</button>
+        <button type="button" class="chip" onclick="setBrand('คีย์บอร์ด/เมาส์')">⌨️ เมาส์+คีย์บอร์ด</button>
+        <button type="button" class="chip" onclick="setBrand('เครื่องสำรองไฟ (UPS)')">🔋 UPS</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>🔢 เลขครุภัณฑ์ (แตะเพื่อสลับมายิงช่องนี้)</label>
+      <input type="text" id="asset_id" placeholder="สแกนหรือพิมพ์เลขครุภัณฑ์" onclick="setScanTarget('asset_id')">
+    </div>
+
+    <div class="form-group">
+      <label>📷 S/N (Serial Number) (แตะเพื่อสลับมายิงช่องนี้)</label>
+      <input type="text" id="serial_no" class="scan-target" placeholder="สแกน S/N ที่นี่" onclick="setScanTarget('serial_no')">
+    </div>
+
+    <div class="form-group">
+      <label>📝 หมายเหตุ</label>
+      <input type="text" id="remark" placeholder="เช่น ยืมใช้งาน, ชำรุด, ครบชุด">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-clear-sn" type="button" onclick="clearItemFields()">ล้างช่อง S/N</button>
+      <button class="btn-save" type="button" onclick="saveData()">💾 บันทึกข้อมูล (Add)</button>
+    </div>
+  </div>
+
+  <!-- ตารางข้อมูลที่บันทึกแล้ว -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <strong>ตารางบันทึกข้อมูล (<span id="totalCount">0</span> รายการ)</strong>
+    </div>
+    <button class="btn-export" onclick="exportToCSV()">📥 ดาวน์โหลดไฟล์ Excel (CSV)</button>
+    
+    <div style="overflow-x: auto; max-height: 240px; overflow-y: auto; margin-top: 8px;">
+      <table>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>เลขครุภัณฑ์</th>
+            <th>อาคาร / ชั้น</th>
+            <th>แผนก / จุดใช้งาน</th>
+            <th>ยี่ห้อ</th>
+            <th>S/N (Serial Number)</th>
+            <th>หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody id="dataTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  let targetFieldId = 'serial_no'; // ช่องเป้าหมายเริ่มต้นสำหรับการสแกน
+  let records = [];
+  let isCooldown = false;
+
+  function setBrand(name) {
+    document.getElementById('brand').value = name;
+  }
+
+  function setScanTarget(fieldId) {
+    targetFieldId = fieldId;
+    document.getElementById('asset_id').classList.remove('scan-target');
+    document.getElementById('serial_no').classList.remove('scan-target');
+    
+    document.getElementById(fieldId).classList.add('scan-target');
+    const labelName = fieldId === 'asset_id' ? 'เลขครุภัณฑ์' : 'S/N (Serial Number)';
+    document.getElementById('stepInfo').innerText = `👉 พร้อมสแกน: [${labelName}]`;
+  }
+
+  // มีเสียง Beep + สั่นเตือน
+  function playBeep() {
+    if (navigator.vibrate) navigator.vibrate(80);
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1000, ctx.currentTime);
+    osc.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  }
+
+  // เมื่อกล้องสแกนติด
+  function onScanSuccess(decodedText) {
+    if (isCooldown) return;
+    playBeep();
+    isCooldown = true;
+
+    document.getElementById(targetFieldId).value = decodedText.trim();
+
+    // แจ้งเตือนสแกนสำเร็จ
+    document.getElementById('stepInfo').innerText = `✅ สแกนสำเร็จ: ${decodedText.trim()}`;
+    document.getElementById('stepInfo').style.background = "#c8e6c9";
+    document.getElementById('stepInfo').style.color = "#2e7d32";
+
+    // ถ้าเพิ่งสแกนเลขครุภัณฑ์เสร็จ ให้สลับไปรอสแกน S/N ให้อัตโนมัติ
+    if (targetFieldId === 'asset_id') {
+      setTimeout(() => { setScanTarget('serial_no'); }, 500);
+    }
+
+    setTimeout(() => { isCooldown = false; }, 1000);
+  }
+
+  function saveData() {
+    const building = document.getElementById('building').value.trim();
+    const dept     = document.getElementById('dept').value.trim();
+    const brand    = document.getElementById('brand').value.trim();
+    const asset_id = document.getElementById('asset_id').value.trim();
+    const serial_no = document.getElementById('serial_no').value.trim();
+    const remark   = document.getElementById('remark').value.trim();
+
+    if (!serial_no && !asset_id) {
+      alert("กรุณาสแกนหรือระบุ 'S/N' หรือ 'เลขครุภัณฑ์' อย่างน้อย 1 อย่าง");
+      return;
+    }
+
+    const no = records.length + 1;
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const record = { no, asset_id, building, dept, brand, serial_no, remark, time: now };
+    records.push(record);
+
+    // อัปเดตตาราง UI
+    const tbody = document.getElementById('dataTableBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center;">${no}</td>
+      <td>${asset_id}</td>
+      <td>${building}</td>
+      <td>${dept}</td>
+      <td>${brand}</td>
+      <td><strong>${serial_no}</strong></td>
+      <td>${remark}</td>
+    `;
+    tbody.appendChild(tr);
+
+    document.getElementById('totalCount').innerText = records.length;
+
+    // เคลียร์เฉพาะข้อมูลอุปกรณ์ (เก็บอาคารและแผนกไว้ เพื่อให้สแกนชิ้นต่อไปได้เร็ว)
+    clearItemFields();
+    
+    // รีเซ็ตเป้าหมายสแกนกลับมาที่ S/N
+    setScanTarget('serial_no');
+    document.getElementById('stepInfo').innerText = `✅ บันทึกลำดับที่ ${no} สำเร็จ!`;
+    document.getElementById('stepInfo').style.background = "#e8eaf6";
+    document.getElementById('stepInfo').style.color = "#283593";
+  }
+
+  function clearItemFields() {
+    document.getElementById('asset_id').value = '';
+    document.getElementById('serial_no').value = '';
+    document.getElementById('brand').value = '';
+    document.getElementById('remark').value = '';
+  }
+
+  // ฟังก์ชันดาวน์โหลดไฟล์ CSV เรียงตามหัวตารางเอกสารจริง
+  function exportToCSV() {
+    if (records.length === 0) {
+      alert("ยังไม่มีข้อมูลที่บันทึก");
+      return;
+    }
+
+    // หัวตารางตรงตามแบบฟอร์มเอกสาร "รายการอุปกรณ์ รพ.ผศ."
+    let csv = "\uFEFFลำดับ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N (Serial Number),หมายเหตุ,เวลาบันทึก\n";
+    
+    records.forEach(r => {
+      csv += `"${r.no}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.serial_no}","${r.remark}","${r.time}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `รายการอุปกรณ์_รพ_ผศ_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // เริ่มต้นเปิดกล้องมือถือ
+  const html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    {
+      fps: 15,
+      qrbox: { width: 280, height: 160 },
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.QR_CODE
+      ]
+    },
+    onScanSuccess
+  ).catch(err => {
+    console.error(err);
+    document.getElementById('stepInfo').innerText = "❌ กรุณาอนุญาตการเข้าถึงกล้อง";
+  });
+</script>
+
+</body>
+</html>
