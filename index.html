@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>รายการอุปกรณ์ รพ.ผศ. (Asset Scanner)</title>
+  <title>รายการอุปกรณ์ รพ.ผศ. (Asset Scanner & OCR)</title>
   
   <!-- ไลบรารีสแกนบาร์โค้ด & QR Code -->
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- ไลบรารีอ่านตัวหนังสือจากภาพ (OCR Tesseract.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #f0f2f5; margin: 0; padding: 10px; }
-    .container { max-width: 550px; margin: 0 auto; }
+    .container { max-width: 600px; margin: 0 auto; }
     .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    h2 { margin: 0 0 6px 0; font-size: 1.15rem; text-align: center; color: #1a237e; }
+    h2 { margin: 0 0 4px 0; font-size: 1.15rem; text-align: center; color: #1a237e; }
     .sub-title { font-size: 0.85rem; text-align: center; color: #666; margin-bottom: 10px; }
     
     #reader { width: 100%; border-radius: 8px; overflow: hidden; background: #000; }
@@ -29,12 +31,12 @@
     
     .form-group { margin-bottom: 8px; }
     label { display: block; font-size: 0.8rem; font-weight: bold; color: #444; margin-bottom: 3px; }
-    input[type="text"], select {
+    input[type="text"] {
       width: 100%; padding: 8px; border: 1px solid #ccc;
       border-radius: 6px; font-size: 0.9rem; background: #fff;
     }
     
-    /* สไตล์ช่องที่กำลังรอยิงบาร์โค้ด */
+    /* สไตล์ช่องที่กำลังรอยิงบาร์โค้ด / รอผล OCR */
     .scan-target {
       background: #fffde7 !important;
       border-color: #fbc02d !important;
@@ -49,18 +51,32 @@
     }
     .chip:active { background: #bdbdbd; }
     
+    .btn-ocr {
+      background: #6a1b9a; color: #fff; width: 100%; padding: 8px;
+      border: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold;
+      margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    
     .btn-group { display: flex; gap: 6px; margin-top: 10px; }
     button {
       flex: 1; padding: 10px; border: none; border-radius: 6px;
       font-size: 0.9rem; font-weight: bold; cursor: pointer;
     }
     .btn-save { background: #2e7d32; color: #fff; }
+    .btn-cancel { background: #757575; color: #fff; display: none; }
     .btn-clear-sn { background: #757575; color: #fff; }
     .btn-export { background: #0288d1; color: #fff; width: 100%; margin-top: 6px; padding: 10px; }
     
+    /* ตาราง */
     table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 8px; }
     th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
     th { background: #f5f5f5; white-space: nowrap; }
+    .btn-action {
+      padding: 3px 6px; border: none; border-radius: 4px; font-size: 0.7rem;
+      color: #fff; cursor: pointer; margin-right: 2px;
+    }
+    .btn-edit { background: #f57c00; }
+    .btn-delete { background: #d32f2f; }
   </style>
 </head>
 <body>
@@ -68,13 +84,19 @@
 <div class="container">
   <div class="card" style="padding-bottom: 8px;">
     <h2>📋 รายการอุปกรณ์ รพ.ผศ.</h2>
-    <div class="sub-title">ระบบสแกนและบันทึกข้อมูลครุภัณฑ์</div>
+    <div class="sub-title">ระบบสแกนบาร์โค้ด & ถ่ายรูปแปลงข้อความ (OCR)</div>
     <div id="reader"></div>
-    <div id="stepInfo" class="status-step">👉 พร้อมสแกน: [S/N (Serial Number)]</div>
+    <div id="stepInfo" class="status-step">👉 พร้อมสแกน: [เลขครุภัณฑ์]</div>
   </div>
 
   <div class="card">
-    <!-- ข้อมูลสถานที่ (ระบบจะคงค่าไว้ ไม่ลบทิ้งเมื่อบันทึก) -->
+    <!-- ปุ่มถ่ายรูปอ่านข้อความ OCR -->
+    <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none" onchange="handleOCR(event)">
+    <button type="button" class="btn-ocr" onclick="document.getElementById('ocrInput').click()">
+      📸 ถ่ายรูปอ่านตัวหนังสือ/ตัวเลข (OCR) ลงช่องที่เลือก
+    </button>
+
+    <!-- ข้อมูลสถานที่ -->
     <div class="row">
       <div class="col form-group">
         <label>📍 อาคาร / ชั้น</label>
@@ -90,7 +112,6 @@
     <div class="form-group">
       <label>🏷️ ยี่ห้อ / อุปกรณ์</label>
       <input type="text" id="brand" placeholder="ระบุยี่ห้อ หรือเลือกปุ่มลัดด้านล่าง">
-      <!-- ปุ่มลัดสำหรับเลือกอุปกรณ์อย่างรวดเร็ว -->
       <div class="quick-chips">
         <button type="button" class="chip" onclick="setBrand('Mini PC')">💻 Mini PC</button>
         <button type="button" class="chip" onclick="setBrand('จอ Monitor')">🖥️ จอ Monitor</button>
@@ -100,13 +121,13 @@
     </div>
 
     <div class="form-group">
-      <label>🔢 เลขครุภัณฑ์ (แตะเพื่อสลับมายิงช่องนี้)</label>
-      <input type="text" id="asset_id" placeholder="สแกนหรือพิมพ์เลขครุภัณฑ์" onclick="setScanTarget('asset_id')">
+      <label>🔢 เลขครุภัณฑ์ (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
+      <input type="text" id="asset_id" class="scan-target" placeholder="สแกน, ถ่ายรูป หรือพิมพ์เลขครุภัณฑ์" onclick="setScanTarget('asset_id')">
     </div>
 
     <div class="form-group">
-      <label>📷 S/N (Serial Number) (แตะเพื่อสลับมายิงช่องนี้)</label>
-      <input type="text" id="serial_no" class="scan-target" placeholder="สแกน S/N ที่นี่" onclick="setScanTarget('serial_no')">
+      <label>📷 S/N (Serial Number) (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
+      <input type="text" id="serial_no" placeholder="สแกน, ถ่ายรูป หรือพิมพ์ S/N" onclick="setScanTarget('serial_no')">
     </div>
 
     <div class="form-group">
@@ -115,22 +136,24 @@
     </div>
 
     <div class="btn-group">
-      <button class="btn-clear-sn" type="button" onclick="clearItemFields()">ล้างช่อง S/N</button>
-      <button class="btn-save" type="button" onclick="saveData()">💾 บันทึกข้อมูล (Add)</button>
+      <button class="btn-clear-sn" type="button" id="btnClear" onclick="clearItemFields()">ล้างช่องข้อมูล</button>
+      <button class="btn-cancel" type="button" id="btnCancelEdit" onclick="cancelEdit()">ยกเลิกแก้ไข</button>
+      <button class="btn-save" type="button" id="btnSave" onclick="saveData()">💾 บันทึกข้อมูล (Add)</button>
     </div>
   </div>
 
-  <!-- ตารางข้อมูลที่บันทึกแล้ว -->
+  <!-- ตารางข้อมูล -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <strong>ตารางบันทึกข้อมูล (<span id="totalCount">0</span> รายการ)</strong>
     </div>
     <button class="btn-export" onclick="exportToCSV()">📥 ดาวน์โหลดไฟล์ Excel (CSV)</button>
     
-    <div style="overflow-x: auto; max-height: 240px; overflow-y: auto; margin-top: 8px;">
+    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; margin-top: 8px;">
       <table>
         <thead>
           <tr>
+            <th>จัดการ</th>
             <th>ลำดับ</th>
             <th>เลขครุภัณฑ์</th>
             <th>อาคาร / ชั้น</th>
@@ -147,8 +170,9 @@
 </div>
 
 <script>
-  let targetFieldId = 'serial_no'; // ช่องเป้าหมายเริ่มต้นสำหรับการสแกน
+  let targetFieldId = 'asset_id'; // ช่องเป้าหมายเริ่มต้น
   let records = [];
+  let editIndex = -1; // -1 = โหมดเพิ่มใหม่, >=0 = กำลังแก้ไขแถวที่ระบุ
   let isCooldown = false;
 
   function setBrand(name) {
@@ -162,10 +186,9 @@
     
     document.getElementById(fieldId).classList.add('scan-target');
     const labelName = fieldId === 'asset_id' ? 'เลขครุภัณฑ์' : 'S/N (Serial Number)';
-    document.getElementById('stepInfo').innerText = `👉 พร้อมสแกน: [${labelName}]`;
+    document.getElementById('stepInfo').innerText = `👉 พร้อมรับข้อมูล: [${labelName}]`;
   }
 
-  // มีเสียง Beep + สั่นเตือน
   function playBeep() {
     if (navigator.vibrate) navigator.vibrate(80);
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -177,20 +200,18 @@
     osc.stop(ctx.currentTime + 0.1);
   }
 
-  // เมื่อกล้องสแกนติด
+  // ทำงานเมื่อยิงบาร์โค้ดติด
   function onScanSuccess(decodedText) {
     if (isCooldown) return;
     playBeep();
     isCooldown = true;
 
     document.getElementById(targetFieldId).value = decodedText.trim();
-
-    // แจ้งเตือนสแกนสำเร็จ
     document.getElementById('stepInfo').innerText = `✅ สแกนสำเร็จ: ${decodedText.trim()}`;
     document.getElementById('stepInfo').style.background = "#c8e6c9";
     document.getElementById('stepInfo').style.color = "#2e7d32";
 
-    // ถ้าเพิ่งสแกนเลขครุภัณฑ์เสร็จ ให้สลับไปรอสแกน S/N ให้อัตโนมัติ
+    // สลับช่องอัตโนมัติถ้าเพิ่งสแกนเลขครุภัณฑ์
     if (targetFieldId === 'asset_id') {
       setTimeout(() => { setScanTarget('serial_no'); }, 500);
     }
@@ -198,49 +219,142 @@
     setTimeout(() => { isCooldown = false; }, 1000);
   }
 
+  // ฟังก์ชันอ่านข้อความจากภาพถ่าย (OCR)
+  async function handleOCR(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const statusEl = document.getElementById('stepInfo');
+    statusEl.innerText = "⏳ กำลังอ่านข้อความจากภาพ... กรุณารอสักครู่";
+    statusEl.style.background = "#fff3e0";
+    statusEl.style.color = "#e65100";
+
+    try {
+      // ใช้ Tesseract อ่านข้อความ (ภาษาอังกฤษ + ไทย)
+      const result = await Tesseract.recognize(file, 'eng+tha');
+      let text = result.data.text.trim();
+      
+      // กรองตัดช่องว่างขึ้นบรรทัดใหม่ให้เหลือบรรทัดเดียว
+      text = text.replace(/\r?\n|\r/g, " ").trim();
+
+      if (text) {
+        document.getElementById(targetFieldId).value = text;
+        statusEl.innerText = `✅ แปลงข้อความสำเร็จ: ${text.substring(0, 25)}...`;
+        statusEl.style.background = "#c8e6c9";
+        statusEl.style.color = "#2e7d32";
+        playBeep();
+      } else {
+        statusEl.innerText = "⚠️ ไม่พบข้อความในภาพ กรุณาถ่ายให้ชัดเจนขึ้น";
+        statusEl.style.background = "#ffebee";
+        statusEl.style.color = "#c62828";
+      }
+    } catch (err) {
+      console.error(err);
+      statusEl.innerText = "❌ เกิดข้อผิดพลาดในการอ่านภาพ";
+    } finally {
+      event.target.value = ""; // รีเซ็ต input file
+    }
+  }
+
+  // แสดงผลตารางใหม่ทั้งหมด
+  function renderTable() {
+    const tbody = document.getElementById('dataTableBody');
+    tbody.innerHTML = "";
+
+    records.forEach((r, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="white-space: nowrap;">
+          <button type="button" class="btn-action btn-edit" onclick="startEdit(${index})">✏️</button>
+          <button type="button" class="btn-action btn-delete" onclick="deleteRecord(${index})">🗑️</button>
+        </td>
+        <td style="text-align:center;">${index + 1}</td>
+        <td>${r.asset_id}</td>
+        <td>${r.building}</td>
+        <td>${r.dept}</td>
+        <td>${r.brand}</td>
+        <td><strong>${r.serial_no}</strong></td>
+        <td>${r.remark}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('totalCount').innerText = records.length;
+  }
+
   function saveData() {
-    const building = document.getElementById('building').value.trim();
-    const dept     = document.getElementById('dept').value.trim();
-    const brand    = document.getElementById('brand').value.trim();
-    const asset_id = document.getElementById('asset_id').value.trim();
+    const building  = document.getElementById('building').value.trim();
+    const dept      = document.getElementById('dept').value.trim();
+    const brand     = document.getElementById('brand').value.trim();
+    const asset_id  = document.getElementById('asset_id').value.trim();
     const serial_no = document.getElementById('serial_no').value.trim();
-    const remark   = document.getElementById('remark').value.trim();
+    const remark    = document.getElementById('remark').value.trim();
 
     if (!serial_no && !asset_id) {
-      alert("กรุณาสแกนหรือระบุ 'S/N' หรือ 'เลขครุภัณฑ์' อย่างน้อย 1 อย่าง");
+      alert("กรุณาระบุ 'เลขครุภัณฑ์' หรือ 'S/N' อย่างน้อย 1 อย่าง");
       return;
     }
 
-    const no = records.length + 1;
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-    const record = { no, asset_id, building, dept, brand, serial_no, remark, time: now };
-    records.push(record);
+    if (editIndex >= 0) {
+      // โหมดแก้ไขแถวเดิม
+      records[editIndex] = {
+        ...records[editIndex],
+        building, dept, brand, asset_id, serial_no, remark
+      };
+      cancelEdit();
+    } else {
+      // โหมดเพิ่มแถวใหม่
+      records.push({
+        asset_id, building, dept, brand, serial_no, remark, time: now
+      });
+      clearItemFields();
+      setScanTarget('asset_id');
+    }
 
-    // อัปเดตตาราง UI
-    const tbody = document.getElementById('dataTableBody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="text-align:center;">${no}</td>
-      <td>${asset_id}</td>
-      <td>${building}</td>
-      <td>${dept}</td>
-      <td>${brand}</td>
-      <td><strong>${serial_no}</strong></td>
-      <td>${remark}</td>
-    `;
-    tbody.appendChild(tr);
+    renderTable();
+  }
 
-    document.getElementById('totalCount').innerText = records.length;
+  // เริ่มต้นแก้ไขรายการ
+  function startEdit(index) {
+    editIndex = index;
+    const r = records[index];
 
-    // เคลียร์เฉพาะข้อมูลอุปกรณ์ (เก็บอาคารและแผนกไว้ เพื่อให้สแกนชิ้นต่อไปได้เร็ว)
+    document.getElementById('building').value = r.building;
+    document.getElementById('dept').value = r.dept;
+    document.getElementById('brand').value = r.brand;
+    document.getElementById('asset_id').value = r.asset_id;
+    document.getElementById('serial_no').value = r.serial_no;
+    document.getElementById('remark').value = r.remark;
+
+    // เปลี่ยนปุ่มเป็นโหมดแก้ไข
+    document.getElementById('btnSave').innerText = "🔄 บันทึกการแก้ไข (Update)";
+    document.getElementById('btnSave').style.background = "#f57c00";
+    document.getElementById('btnCancelEdit').style.display = "block";
+    document.getElementById('btnClear').style.display = "none";
+
+    document.getElementById('stepInfo').innerText = `✏️ กำลังแก้ไขรายการลำดับที่ ${index + 1}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEdit() {
+    editIndex = -1;
     clearItemFields();
-    
-    // รีเซ็ตเป้าหมายสแกนกลับมาที่ S/N
-    setScanTarget('serial_no');
-    document.getElementById('stepInfo').innerText = `✅ บันทึกลำดับที่ ${no} สำเร็จ!`;
-    document.getElementById('stepInfo').style.background = "#e8eaf6";
-    document.getElementById('stepInfo').style.color = "#283593";
+    document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูล (Add)";
+    document.getElementById('btnSave').style.background = "#2e7d32";
+    document.getElementById('btnCancelEdit').style.display = "none";
+    document.getElementById('btnClear').style.display = "block";
+    setScanTarget('asset_id');
+  }
+
+  // ลบรายการ
+  function deleteRecord(index) {
+    if (confirm(`คุณต้องการลบรายการลำดับที่ ${index + 1} ใช่หรือไม่?`)) {
+      records.splice(index, 1);
+      if (editIndex === index) cancelEdit();
+      renderTable();
+    }
   }
 
   function clearItemFields() {
@@ -250,18 +364,17 @@
     document.getElementById('remark').value = '';
   }
 
-  // ฟังก์ชันดาวน์โหลดไฟล์ CSV เรียงตามหัวตารางเอกสารจริง
+  // ดาวน์โหลดไฟล์ Excel (CSV)
   function exportToCSV() {
     if (records.length === 0) {
       alert("ยังไม่มีข้อมูลที่บันทึก");
       return;
     }
 
-    // หัวตารางตรงตามแบบฟอร์มเอกสาร "รายการอุปกรณ์ รพ.ผศ."
     let csv = "\uFEFFลำดับ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N (Serial Number),หมายเหตุ,เวลาบันทึก\n";
     
-    records.forEach(r => {
-      csv += `"${r.no}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.serial_no}","${r.remark}","${r.time}"\n`;
+    records.forEach((r, idx) => {
+      csv += `"${idx + 1}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.serial_no}","${r.remark}","${r.time || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -274,7 +387,7 @@
     document.body.removeChild(link);
   }
 
-  // เริ่มต้นเปิดกล้องมือถือ
+  // เริ่มต้นเปิดกล้อง
   const html5QrCode = new Html5Qrcode("reader");
   html5QrCode.start(
     { facingMode: "environment" },
