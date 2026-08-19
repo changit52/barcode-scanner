@@ -46,10 +46,10 @@
     
     .quick-chips { display: flex; gap: 4px; overflow-x: auto; margin-top: 4px; padding-bottom: 2px; }
     .chip {
-      background: #e0e0e0; border: none; padding: 4px 8px; border-radius: 12px;
-      font-size: 0.75rem; white-space: nowrap; cursor: pointer;
+      background: #e8eaf6; color: #283593; border: 1px solid #c5cae9; padding: 4px 8px; border-radius: 12px;
+      font-size: 0.75rem; white-space: nowrap; cursor: pointer; font-weight: 500;
     }
-    .chip:active { background: #bdbdbd; }
+    .chip:active { background: #9fa8da; color: #fff; }
     
     .btn-ocr {
       background: #6a1b9a; color: #fff; width: 100%; padding: 8px;
@@ -86,7 +86,7 @@
     <h2>📋 รายการอุปกรณ์ รพ.ผศ.</h2>
     <div class="sub-title">ระบบสแกนบาร์โค้ด & ถ่ายรูปแปลงข้อความ (OCR)</div>
     <div id="reader"></div>
-    <div id="stepInfo" class="status-step">👉 พร้อมสแกน: [เลขครุภัณฑ์]</div>
+    <div id="stepInfo" class="status-step">👉 พร้อมรับข้อมูล: [เลขครุภัณฑ์]</div>
   </div>
 
   <div class="card">
@@ -108,28 +108,45 @@
       </div>
     </div>
 
-    <!-- ข้อมูลอุปกรณ์ -->
+    <!-- 1. ช่อง รายการ (ชนิดอุปกรณ์) -->
     <div class="form-group">
-      <label>🏷️ ยี่ห้อ / อุปกรณ์</label>
-      <input type="text" id="brand" placeholder="ระบุยี่ห้อ หรือเลือกปุ่มลัดด้านล่าง">
+      <label>📦 รายการ (ชนิดอุปกรณ์)</label>
+      <input type="text" id="item_name" placeholder="ระบุรายการ หรือกดปุ่มลัด">
       <div class="quick-chips">
-        <button type="button" class="chip" onclick="setBrand('Mini PC')">💻 Mini PC</button>
-        <button type="button" class="chip" onclick="setBrand('จอ Monitor')">🖥️ จอ Monitor</button>
-        <button type="button" class="chip" onclick="setBrand('คีย์บอร์ด/เมาส์')">⌨️ เมาส์+คีย์บอร์ด</button>
-        <button type="button" class="chip" onclick="setBrand('เครื่องสำรองไฟ (UPS)')">🔋 UPS</button>
+        <button type="button" class="chip" onclick="setItem('Mini PC')">💻 Mini PC</button>
+        <button type="button" class="chip" onclick="setItem('จอภาพ (Monitor)')">🖥️ จอภาพ</button>
+        <button type="button" class="chip" onclick="setItem('เมาส์ & คีย์บอร์ด')">⌨️ เมาส์+คีย์บอร์ด</button>
+        <button type="button" class="chip" onclick="setItem('เครื่องสำรองไฟ (UPS)')">🔋 UPS</button>
+        <button type="button" class="chip" onclick="setItem('เครื่องพิมพ์ (Printer)')">🖨️ เครื่องพิมพ์</button>
       </div>
     </div>
 
+    <!-- 2. ช่อง ยี่ห้อ -->
+    <div class="form-group">
+      <label>🏷️ ยี่ห้อ (Brand)</label>
+      <input type="text" id="brand" placeholder="เช่น Dell, HP, Lenovo, APC, Samsung">
+      <div class="quick-chips">
+        <button type="button" class="chip" onclick="setBrand('Dell')">Dell</button>
+        <button type="button" class="chip" onclick="setBrand('HP')">HP</button>
+        <button type="button" class="chip" onclick="setBrand('Lenovo')">Lenovo</button>
+        <button type="button" class="chip" onclick="setBrand('APC')">APC</button>
+        <button type="button" class="chip" onclick="setBrand('Logitech')">Logitech</button>
+      </div>
+    </div>
+
+    <!-- 3. ช่อง เลขครุภัณฑ์ -->
     <div class="form-group">
       <label>🔢 เลขครุภัณฑ์ (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
       <input type="text" id="asset_id" class="scan-target" placeholder="สแกน, ถ่ายรูป หรือพิมพ์เลขครุภัณฑ์" onclick="setScanTarget('asset_id')">
     </div>
 
+    <!-- 4. ช่อง S/N -->
     <div class="form-group">
       <label>📷 S/N (Serial Number) (แตะเพื่อสลับมารับข้อมูลช่องนี้)</label>
       <input type="text" id="serial_no" placeholder="สแกน, ถ่ายรูป หรือพิมพ์ S/N" onclick="setScanTarget('serial_no')">
     </div>
 
+    <!-- 5. หมายเหตุ -->
     <div class="form-group">
       <label>📝 หมายเหตุ</label>
       <input type="text" id="remark" placeholder="เช่น ยืมใช้งาน, ชำรุด, ครบชุด">
@@ -155,10 +172,11 @@
           <tr>
             <th>จัดการ</th>
             <th>ลำดับ</th>
+            <th>รายการ</th>
+            <th>ยี่ห้อ</th>
             <th>เลขครุภัณฑ์</th>
             <th>อาคาร / ชั้น</th>
             <th>แผนก / จุดใช้งาน</th>
-            <th>ยี่ห้อ</th>
             <th>S/N (Serial Number)</th>
             <th>หมายเหตุ</th>
           </tr>
@@ -172,8 +190,12 @@
 <script>
   let targetFieldId = 'asset_id'; // ช่องเป้าหมายเริ่มต้น
   let records = [];
-  let editIndex = -1; // -1 = โหมดเพิ่มใหม่, >=0 = กำลังแก้ไขแถวที่ระบุ
+  let editIndex = -1;
   let isCooldown = false;
+
+  function setItem(name) {
+    document.getElementById('item_name').value = name;
+  }
 
   function setBrand(name) {
     document.getElementById('brand').value = name;
@@ -200,7 +222,7 @@
     osc.stop(ctx.currentTime + 0.1);
   }
 
-  // ทำงานเมื่อยิงบาร์โค้ดติด
+  // ทำงานเมื่อยิงบาร์โค้ดสำเร็จ
   function onScanSuccess(decodedText) {
     if (isCooldown) return;
     playBeep();
@@ -211,7 +233,7 @@
     document.getElementById('stepInfo').style.background = "#c8e6c9";
     document.getElementById('stepInfo').style.color = "#2e7d32";
 
-    // สลับช่องอัตโนมัติถ้าเพิ่งสแกนเลขครุภัณฑ์
+    // สลับช่องอัตโนมัติถ้าสแกนเลขครุภัณฑ์เสร็จ
     if (targetFieldId === 'asset_id') {
       setTimeout(() => { setScanTarget('serial_no'); }, 500);
     }
@@ -219,7 +241,7 @@
     setTimeout(() => { isCooldown = false; }, 1000);
   }
 
-  // ฟังก์ชันอ่านข้อความจากภาพถ่าย (OCR)
+  // อ่านข้อความจากรูปภาพ (OCR)
   async function handleOCR(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -230,11 +252,8 @@
     statusEl.style.color = "#e65100";
 
     try {
-      // ใช้ Tesseract อ่านข้อความ (ภาษาอังกฤษ + ไทย)
       const result = await Tesseract.recognize(file, 'eng+tha');
       let text = result.data.text.trim();
-      
-      // กรองตัดช่องว่างขึ้นบรรทัดใหม่ให้เหลือบรรทัดเดียว
       text = text.replace(/\r?\n|\r/g, " ").trim();
 
       if (text) {
@@ -252,11 +271,11 @@
       console.error(err);
       statusEl.innerText = "❌ เกิดข้อผิดพลาดในการอ่านภาพ";
     } finally {
-      event.target.value = ""; // รีเซ็ต input file
+      event.target.value = "";
     }
   }
 
-  // แสดงผลตารางใหม่ทั้งหมด
+  // วาดตารางข้อมูลใหม่
   function renderTable() {
     const tbody = document.getElementById('dataTableBody');
     tbody.innerHTML = "";
@@ -269,10 +288,11 @@
           <button type="button" class="btn-action btn-delete" onclick="deleteRecord(${index})">🗑️</button>
         </td>
         <td style="text-align:center;">${index + 1}</td>
+        <td><strong>${r.item_name}</strong></td>
+        <td>${r.brand}</td>
         <td>${r.asset_id}</td>
         <td>${r.building}</td>
         <td>${r.dept}</td>
-        <td>${r.brand}</td>
         <td><strong>${r.serial_no}</strong></td>
         <td>${r.remark}</td>
       `;
@@ -285,6 +305,7 @@
   function saveData() {
     const building  = document.getElementById('building').value.trim();
     const dept      = document.getElementById('dept').value.trim();
+    const item_name = document.getElementById('item_name').value.trim();
     const brand     = document.getElementById('brand').value.trim();
     const asset_id  = document.getElementById('asset_id').value.trim();
     const serial_no = document.getElementById('serial_no').value.trim();
@@ -298,16 +319,14 @@
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
     if (editIndex >= 0) {
-      // โหมดแก้ไขแถวเดิม
       records[editIndex] = {
         ...records[editIndex],
-        building, dept, brand, asset_id, serial_no, remark
+        building, dept, item_name, brand, asset_id, serial_no, remark
       };
       cancelEdit();
     } else {
-      // โหมดเพิ่มแถวใหม่
       records.push({
-        asset_id, building, dept, brand, serial_no, remark, time: now
+        item_name, brand, asset_id, building, dept, serial_no, remark, time: now
       });
       clearItemFields();
       setScanTarget('asset_id');
@@ -316,19 +335,18 @@
     renderTable();
   }
 
-  // เริ่มต้นแก้ไขรายการ
   function startEdit(index) {
     editIndex = index;
     const r = records[index];
 
     document.getElementById('building').value = r.building;
     document.getElementById('dept').value = r.dept;
+    document.getElementById('item_name').value = r.item_name;
     document.getElementById('brand').value = r.brand;
     document.getElementById('asset_id').value = r.asset_id;
     document.getElementById('serial_no').value = r.serial_no;
     document.getElementById('remark').value = r.remark;
 
-    // เปลี่ยนปุ่มเป็นโหมดแก้ไข
     document.getElementById('btnSave').innerText = "🔄 บันทึกการแก้ไข (Update)";
     document.getElementById('btnSave').style.background = "#f57c00";
     document.getElementById('btnCancelEdit').style.display = "block";
@@ -348,7 +366,6 @@
     setScanTarget('asset_id');
   }
 
-  // ลบรายการ
   function deleteRecord(index) {
     if (confirm(`คุณต้องการลบรายการลำดับที่ ${index + 1} ใช่หรือไม่?`)) {
       records.splice(index, 1);
@@ -358,9 +375,10 @@
   }
 
   function clearItemFields() {
+    document.getElementById('item_name').value = '';
+    document.getElementById('brand').value = '';
     document.getElementById('asset_id').value = '';
     document.getElementById('serial_no').value = '';
-    document.getElementById('brand').value = '';
     document.getElementById('remark').value = '';
   }
 
@@ -371,10 +389,10 @@
       return;
     }
 
-    let csv = "\uFEFFลำดับ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N (Serial Number),หมายเหตุ,เวลาบันทึก\n";
+    let csv = "\uFEFFลำดับ,รายการ,ยี่ห้อ,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,S/N (Serial Number),หมายเหตุ,เวลาบันทึก\n";
     
     records.forEach((r, idx) => {
-      csv += `"${idx + 1}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.serial_no}","${r.remark}","${r.time || ''}"\n`;
+      csv += `"${idx + 1}","${r.item_name}","${r.brand}","${r.asset_id}","${r.building}","${r.dept}","${r.serial_no}","${r.remark}","${r.time || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -387,7 +405,7 @@
     document.body.removeChild(link);
   }
 
-  // เริ่มต้นเปิดกล้อง
+  // เปิดใช้งานกล้องมือถือ
   const html5QrCode = new Html5Qrcode("reader");
   html5QrCode.start(
     { facingMode: "environment" },
