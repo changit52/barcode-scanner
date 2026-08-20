@@ -89,14 +89,12 @@
   </div>
 
   <div class="card">
-    <!-- ปุ่มถ่ายรูปอ่านข้อความ OCR -->
     <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none" onchange="handleOCR(event)">
     <button type="button" class="btn-ocr" onclick="document.getElementById('ocrInput').click()">
       <span>📸 ถ่ายรูปอ่านตัวหนังสือ/ตัวเลข (OCR) ลงช่องที่เลือก</span>
       <span style="font-size:0.7rem; font-weight:normal; color:#e1bee7;">(แนะนำ: ถ่ายรูปในแนวนอนเพื่อความแม่นยำ)</span>
     </button>
 
-    <!-- ข้อมูลสถานที่ (จำค่าไว้ ไม่ลบเมื่อกดบันทึก) -->
     <div class="row">
       <div class="col form-group">
         <label>📍 อาคาร / ชั้น</label>
@@ -122,11 +120,10 @@
       </div>
       <div class="col form-group">
         <label>🔢 เลขครุภัณฑ์</label>
-        <input type="text" id="asset_id" class="scan-target" placeholder="สแกน/ถ่ายรูป/พิมพ์" onclick="setScanTarget('asset_id')">
+        <input type="text" id="asset_id" class="scan-target" value="รพ.ผศ. 7440-009-0005-2569/" placeholder="สแกน/ถ่ายรูป/พิมพ์" onclick="setScanTarget('asset_id')">
       </div>
     </div>
 
-    <!-- ส่วน S/N ของอุปกรณ์ทั้ง 4 ชิ้นในชุด -->
     <div style="background:#f8f9fa; border:1px dashed #bbb; border-radius:8px; padding:10px; margin: 8px 0;">
       <div style="font-weight:bold; font-size:0.85rem; color:#1a237e; margin-bottom:6px;">📦 ข้อมูล S/N อุปกรณ์ในชุด (แตะช่องเพื่อเลือกยิงได้)</div>
       
@@ -151,7 +148,6 @@
       </div>
     </div>
 
-    <!-- หมายเหตุ -->
     <div class="form-group">
       <label>📝 หมายเหตุ</label>
       <input type="text" id="remark" placeholder="เช่น ใช้งานปกติ, ยืมชั่วคราว, รอเปลี่ยนแบต">
@@ -164,7 +160,6 @@
     </div>
   </div>
 
-  <!-- ตารางข้อมูล -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <strong>ตารางบันทึกชุดคอมพิวเตอร์ (<span id="totalCount">0</span> ชุด)</strong>
@@ -475,7 +470,7 @@
   }
 
   function clearItemFields() {
-    document.getElementById('asset_id').value = '';
+    document.getElementById('asset_id').value = 'รพ.ผศ. 7440-009-0005-2569/';
     document.getElementById('sn_monitor').value = '';
     document.getElementById('sn_minipc').value = '';
     document.getElementById('sn_kbm').value = '';
@@ -509,7 +504,7 @@
   html5QrCode.start(
     { facingMode: "environment" },
     {
-      fps: 15,
+      fps: 10,
       qrbox: { width: 280, height: 160 },
       formatsToSupport: [
         Html5QrcodeSupportedFormats.CODE_128,
