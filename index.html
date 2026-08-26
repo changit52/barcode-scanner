@@ -14,670 +14,174 @@
   
   <style>
     :root {
-      --primary: #4f46e5;
-      --primary-light: #eef2ff;
-      --primary-dark: #3730a3;
-      --emerald: #10b981;
-      --emerald-light: #ecfdf5;
-      --teal: #0d9488;
-      --teal-light: #f0fdfa;
-      --amber: #f59e0b;
-      --amber-light: #fffbeb;
-      --slate-50: #f8fafc;
-      --slate-100: #f1f5f9;
-      --slate-200: #e2e8f0;
-      --slate-300: #cbd5e1;
-      --slate-400: #94a3b8;
-      --slate-500: #64748b;
-      --slate-600: #475569;
-      --slate-700: #334155;
-      --slate-800: #1e293b;
-      --slate-900: #0f172a;
-      --radius: 14px;
+      --primary: #4f46e5; --primary-light: #eef2ff; --primary-dark: #3730a3;
+      --emerald: #10b981; --teal: #0d9488; --amber: #f59e0b; --red: #ef4444;
+      --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1;
+      --slate-400: #94a3b8; --slate-500: #64748b; --slate-600: #475569;
+      --slate-700: #334155; --slate-800: #1e293b; --radius: 12px;
     }
     
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Kanit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #e2e8f0; color: var(--slate-800); line-height: 1.4; padding: 8px; padding-bottom: 80px; }
+    .app-container { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
     
-    body {
-      background-color: #f1f5f9;
-      color: var(--slate-800);
-      line-height: 1.45;
-      padding: 12px;
-      padding-bottom: 96px;
-    }
-    
-    .app-container {
-      max-width: 580px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    /* Header & Live Dashboard */
+    /* Header Card */
     .header-card {
       background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
-      border-radius: 18px;
-      padding: 16px 14px 14px 14px;
-      color: white;
-      box-shadow: 0 10px 25px -5px rgba(49, 46, 129, 0.35);
-      position: relative;
-      overflow: hidden;
+      border-radius: 16px; padding: 12px 14px 10px 14px; color: white; box-shadow: 0 4px 15px rgba(49, 46, 129, 0.2);
     }
+    .app-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .app-title { font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .sync-status-badge { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 3px 8px; font-size: 0.65rem; font-weight: 500; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; box-shadow: 0 0 6px #34d399; }
     
-    .header-card::after {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 140px;
-      height: 140px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 50%;
-      pointer-events: none;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+    .stat-pill { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; padding: 4px 4px; text-align: center; cursor: pointer; }
+    .stat-pill.success { background: rgba(16, 185, 129, 0.25); border-color: rgba(52, 211, 153, 0.45); }
+    .stat-num { font-size: 1.2rem; font-weight: 700; line-height: 1; }
+    .stat-lbl { font-size: 0.6rem; opacity: 0.85; margin-top: 2px; }
     
-    .app-header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
+    .progress-bar-bg { background: rgba(255, 255, 255, 0.18); border-radius: 99px; height: 5px; overflow: hidden; margin-top: 4px; }
+    .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; border-radius: 99px; transition: width 0.4s ease-out; }
     
-    .app-title {
-      font-size: 1.12rem;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    /* General Cards */
+    .card { background: #ffffff; border-radius: var(--radius); padding: 10px 12px; border: 1px solid var(--slate-200); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .card-title { font-size: 0.85rem; font-weight: 600; color: var(--slate-800); display: flex; align-items: center; gap: 4px; }
     
-    .sync-status-badge {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 0.72rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .sync-status-badge:active {
-      transform: scale(0.95);
-      background: rgba(255, 255, 255, 0.25);
-    }
-    
-    .pulse-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #34d399;
-      box-shadow: 0 0 8px #34d399;
-    }
-    
-    .app-subtitle {
-      font-size: 0.74rem;
-      opacity: 0.82;
-      font-weight: 300;
-      margin-bottom: 12px;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    
-    .stat-pill {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 12px;
-      padding: 8px 6px;
-      text-align: center;
-    }
-    
-    .stat-pill.success {
-      background: rgba(16, 185, 129, 0.25);
-      border-color: rgba(52, 211, 153, 0.45);
-    }
-    
-    .stat-num {
-      font-size: 1.35rem;
-      font-weight: 700;
-      line-height: 1.1;
-      font-feature-settings: "tnum";
-    }
-    
-    .stat-lbl {
-      font-size: 0.68rem;
-      opacity: 0.85;
-      margin-top: 2px;
-    }
-    
-    .progress-bar-bg {
-      background: rgba(255, 255, 255, 0.18);
-      border-radius: 99px;
-      height: 6px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    
-    .progress-bar-fill {
-      background: linear-gradient(90deg, #34d399, #10b981);
-      height: 100%;
-      width: 0%;
-      border-radius: 99px;
-      transition: width 0.4s ease-out;
-    }
-    
-    .progress-status {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
-    
-    /* Card Styles */
-    .card {
-      background: #ffffff;
-      border-radius: var(--radius);
-      padding: 14px;
-      border: 1px solid var(--slate-200);
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
-    }
-    
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    
-    .card-title {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--slate-800);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .btn-open-dir { width: 100%; background: var(--primary-light); color: var(--primary); border: 1px dashed #a5b4fc; border-radius: 10px; padding: 8px 10px; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; cursor: pointer; margin-bottom: 8px; }
     
     /* Navigator Control */
-    .nav-box {
-      display: flex;
-      align-items: center;
-      background: var(--slate-100);
-      border-radius: 12px;
-      padding: 3px;
-      gap: 4px;
-    }
-    
-    .btn-step {
-      background: #ffffff;
-      border: 1px solid var(--slate-200);
-      color: var(--slate-700);
-      font-size: 0.85rem;
-      font-weight: 600;
-      border-radius: 9px;
-      padding: 8px 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-    
-    .btn-step:active {
-      background: var(--primary-light);
-      color: var(--primary);
-      transform: scale(0.96);
-    }
-    
-    .item-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      text-align: center;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--primary);
-      outline: none;
-    }
+    .nav-box { display: flex; align-items: center; background: var(--slate-100); border-radius: 10px; padding: 3px; gap: 4px; justify-content: space-between; }
+    .btn-step { background: #ffffff; border: 1px solid var(--slate-200); color: var(--slate-700); font-size: 0.85rem; font-weight: 600; border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap:4px; transition: all 0.15s; }
+    .btn-step:active { background: var(--primary-light); transform: scale(0.96); color: var(--primary); border-color: var(--primary); }
+    .item-input { flex: 1; background: transparent; border: none; text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--primary); outline: none; width: 60px; }
     
     /* Auto Preview Banner */
-    .info-banner {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 1px solid #e2e8f0;
-      border-left: 3px solid var(--primary);
-      border-radius: 10px;
-      padding: 9px 11px;
-      font-size: 0.78rem;
-      color: var(--slate-700);
-      margin-top: 8px;
-      display: none;
-    }
+    .info-banner { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid var(--primary); border-radius: 8px; padding: 6px 8px; font-size: 0.72rem; color: var(--slate-700); margin-top: 6px; display: none; }
+    .info-banner-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--primary); font-size: 0.7rem; margin-bottom: 2px; }
     
-    .info-banner-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      color: var(--primary);
-      font-size: 0.74rem;
-      margin-bottom: 3px;
-    }
+    .action-badge-group { display: flex; gap: 4px; align-items: center; }
+    .scan-status-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .tag-saved { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .tag-pending { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+    .tag-new { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    
+    .btn-delete-active { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 4px; padding: 2px 6px; font-size: 0.6rem; font-weight: 600; cursor: pointer; display: none; }
+    .btn-delete-active:active { background: #fca5a5; }
 
-    .scan-status-tag {
-      font-size: 0.68rem;
-      padding: 2px 7px;
-      border-radius: 6px;
-      font-weight: 600;
-    }
-    .tag-saved {
-      background: #dcfce7;
-      color: #15803d;
-      border: 1px solid #bbf7d0;
-    }
-    .tag-pending {
-      background: #f1f5f9;
-      color: #64748b;
-      border: 1px solid #cbd5e1;
-    }
-    
-    /* Grid Inputs */
-    .field-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-    
-    .input-group:last-child {
-      margin-bottom: 0;
-    }
-    
-    .input-label {
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--slate-600);
-    }
+    /* Inputs */
+    .field-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .input-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+    .input-group:last-child { margin-bottom: 0; }
+    .input-label { font-size: 0.72rem; font-weight: 600; color: var(--slate-600); }
     
     .input-control {
-      width: 100%;
-      height: 42px;
-      border: 1px solid var(--slate-200);
-      border-radius: 10px;
-      padding: 0 12px;
-      font-size: 0.9rem;
-      background: var(--slate-50);
-      color: var(--slate-800);
-      transition: all 0.15s ease-in-out;
-      outline: none;
+      width: 100%; height: 38px; border: 1px solid var(--slate-200); border-radius: 8px;
+      padding: 0 10px; font-size: 0.85rem; background: var(--slate-50); outline: none;
     }
+    .input-control:focus { background: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
     
-    .input-control:focus {
-      background: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-    }
+    .input-addon-wrapper { position: relative; display: flex; align-items: center; }
+    .input-addon-wrapper .input-control { padding-right: 135px; } 
     
-    /* Embedded Input with Inline Action Icons */
-    .input-addon-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    
-    .input-addon-wrapper .input-control {
-      padding-right: 140px;
-    }
-    
-    .inline-actions {
-      position: absolute;
-      right: 4px;
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    
+    .inline-actions { position: absolute; right: 4px; display: flex; gap: 4px; align-items: center; }
     .btn-icon-action {
-      height: 32px;
-      padding: 0 9px;
-      border: none;
-      border-radius: 7px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #ffffff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      transition: transform 0.1s, opacity 0.15s;
+      height: 30px; padding: 0 10px; border: none; border-radius: 6px; font-size: 0.72rem;
+      font-weight: 500; color: #ffffff; cursor: pointer; display: flex; align-items: center; gap: 4px;
     }
-    
-    .btn-icon-action:active {
-      transform: scale(0.92);
-      opacity: 0.85;
-    }
-    
-    .btn-icon-scan {
-      background: #0284c7;
-    }
-    
-    .btn-icon-ocr {
-      background: #9333ea;
-    }
+    .btn-icon-action:active { transform: scale(0.92); opacity: 0.85; }
+    .btn-icon-scan { background: #0ea5e9; }
+    .btn-icon-ocr { background: #8b5cf6; }
     
     /* Chips Bar */
-    .chips-slider {
-      display: flex;
-      gap: 5px;
-      overflow-x: auto;
-      padding: 3px 0;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .chips-slider::-webkit-scrollbar {
-      display: none;
-    }
+    .chips-slider { display: flex; gap: 4px; overflow-x: auto; padding: 2px 0; scrollbar-width: none; }
+    .chips-slider::-webkit-scrollbar { display: none; }
+    .chip-btn { background: var(--slate-100); color: var(--slate-700); border: 1px solid var(--slate-200); border-radius: 12px; padding: 4px 10px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
+    .chip-btn:active, .chip-btn.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+    .chip-diy { background: #fffbeb; border-color: #fde68a; color: #b45309; }
     
-    .chip-btn {
-      background: var(--slate-100);
-      color: var(--slate-700);
-      border: 1px solid var(--slate-200);
-      border-radius: 20px;
-      padding: 4px 11px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .btn-one-shot { width: 100%; background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #ffffff; border: none; border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; box-shadow: 0 3px 8px rgba(13, 148, 136, 0.25); }
+    .btn-one-shot:active { transform: scale(0.98); opacity: 0.9; }
     
-    .chip-btn:active, .chip-btn.active {
-      background: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary);
-    }
+    .section-itset { border-top: 3px solid var(--emerald); }
+    .section-network { border-top: 3px solid var(--teal); }
     
-    .chip-diy {
-      background: #fffbeb;
-      border-color: #fde68a;
-      color: #b45309;
-    }
+    /* Dock Bar */
+    .dock-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--slate-200); padding: 8px 10px; display: flex; gap: 6px; z-index: 100; }
+    .dock-container { max-width: 580px; margin: 0 auto; width: 100%; display: flex; gap: 6px; }
+    .btn-dock { flex: 1; height: 42px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    .btn-dock:active { transform: scale(0.97); }
+    .btn-dock-clear { background: var(--slate-100); color: var(--slate-600); flex: 0.35; }
+    .btn-dock-save { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; flex: 0.65; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);}
     
-    .btn-one-shot {
-      width: 100%;
-      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      margin-bottom: 8px;
-      box-shadow: 0 3px 8px rgba(13, 148, 136, 0.25);
-    }
+    /* Modals & Toasts */
+    #toast { position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: #ffffff; padding: 8px 16px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; z-index: 9999; opacity: 0; transition: all 0.25s; box-shadow: 0 8px 20px rgba(0,0,0,0.25); pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     
-    .btn-one-shot:active {
-      transform: scale(0.98);
-      opacity: 0.9;
-    }
+    /* Directory Modal */
+    #directoryModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 99990; align-items: flex-end; }
+    .dir-sheet { background: #ffffff; border-radius: 16px 16px 0 0; width: 100%; max-width: 600px; margin: 0 auto; height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+    .dir-header { padding: 12px; border-bottom: 1px solid var(--slate-200); }
+    .dir-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .dir-title { font-size: 0.95rem; font-weight: 700; }
+    .btn-close-dir { background: var(--slate-100); border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
+    .dir-search-box { width: 100%; height: 36px; border: 1px solid var(--slate-300); border-radius: 8px; padding: 0 10px; font-size: 0.8rem; background: var(--slate-50); outline: none; margin-bottom: 6px; }
+    .dir-filter-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .dir-tab { padding: 4px 10px; border-radius: 16px; font-size: 0.7rem; font-weight: 500; border: 1px solid var(--slate-200); background: var(--slate-100); cursor: pointer; white-space: nowrap; }
+    .dir-tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+    .dir-list-body { flex: 1; overflow-y: auto; padding: 8px; background: var(--slate-50); display: flex; flex-direction: column; gap: 6px; }
+    .dir-item-card { background: #ffffff; border: 1px solid var(--slate-200); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+    .dir-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .dir-item-no { background: var(--primary-light); color: var(--primary); font-weight: 700; font-size: 0.75rem; padding: 1px 6px; border-radius: 4px; }
+    .dir-dept-title { font-weight: 600; font-size: 0.8rem; color: var(--slate-800); }
+    .dir-old-spec { font-size: 0.7rem; color: var(--slate-500); }
+    .dir-new-info { font-size: 0.65rem; color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-top: 3px; display: inline-block; }
     
-    .section-itset {
-      border-top: 3px solid var(--emerald);
-    }
-    
-    .section-network {
-      border-top: 3px solid var(--teal);
-    }
-    
-    .collapsible-trigger {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-    }
-    
-    .table-responsive {
-      overflow-x: auto;
-      border-radius: 8px;
-      border: 1px solid var(--slate-200);
-      margin-top: 8px;
-      max-height: 260px;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.74rem;
-    }
-    
-    th, td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--slate-100);
-      text-align: left;
-    }
-    
-    th {
-      background: var(--slate-50);
-      color: var(--slate-600);
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    
-    .btn-tbl {
-      padding: 3px 6px;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      color: white;
-      cursor: pointer;
-    }
-    .btn-tbl.edit { background: var(--amber); }
-    .btn-tbl.del { background: #ef4444; }
-    
-    /* Floating Action Dock */
-    .dock-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-top: 1px solid var(--slate-200);
-      padding: 8px 12px;
-      display: flex;
-      gap: 8px;
-      z-index: 100;
-      box-shadow: 0 -4px 15px rgba(15, 23, 42, 0.06);
-    }
-    
-    .dock-container {
-      max-width: 580px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      gap: 8px;
-    }
-    
-    .btn-dock {
-      flex: 1;
-      height: 44px;
-      border-radius: 11px;
-      border: none;
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease-out;
-    }
-    
-    .btn-dock:active {
-      transform: scale(0.97);
-    }
-    
-    .btn-dock-clear {
-      background: var(--slate-100);
-      color: var(--slate-600);
-      flex: 0.45;
-    }
-    
-    .btn-dock-save {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-    
-    #toast {
-      position: fixed;
-      bottom: 60px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #1e293b;
-      color: #ffffff;
-      padding: 9px 18px;
-      border-radius: 99px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      z-index: 9999;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    
-    #scannerModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(5px);
-      z-index: 99999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    
-    .modal-sheet {
-      background: #ffffff;
-      border-radius: 18px;
-      width: 100%;
-      max-width: 380px;
-      padding: 16px;
-      text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);
-    }
-    
-    #modalReader {
-      width: 100%;
-      min-height: 220px;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #000;
-      margin: 10px 0;
-    }
-    
-    .btn-close-scanner {
-      width: 100%;
-      padding: 11px;
-      border: none;
-      border-radius: 10px;
-      background: #ef4444;
-      color: white;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
+    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+    .modal-sheet { background: #ffffff; border-radius: 16px; width: 100%; max-width: 380px; padding: 12px; text-align: center; }
+    #modalReader { width: 100%; min-height: 200px; border-radius: 10px; overflow: hidden; background: #000; margin: 8px 0; }
+    .btn-close-scanner { width: 100%; padding: 10px; border: none; border-radius: 8px; background: #ef4444; color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
   
-  <!-- Header & Live Dashboard -->
   <div class="header-card">
     <div class="app-header-top">
       <div>
         <div class="app-title">📋 ระบบสำรวจคอมพิวเตอร์ รพ.ผศ.</div>
-        <div class="app-subtitle">บันทึกตรวจนับชุดใหม่ & เครือข่าย (Live Sync ชีต)</div>
       </div>
-      <div class="sync-status-badge" id="syncStatusBadge" onclick="fetchRecordsFromSheets(true)">
-        <span class="pulse-dot" id="syncDot"></span>
-        <span id="syncStatusText">ซิงค์สด</span>
+      <div class="sync-status-badge" onclick="fetchRecordsFromSheets(true)">
+        <span class="pulse-dot" id="syncDot"></span><span id="syncStatusText">ซิงค์สด</span>
       </div>
     </div>
     
     <div class="stats-grid">
-      <div class="stat-pill">
-        <div class="stat-num">207</div>
-        <div class="stat-lbl">เป้าหมาย</div>
+      <div class="stat-pill" onclick="openDirectoryModal('all')">
+        <div class="stat-num" id="dash-target">207</div><div class="stat-lbl">เป้าหมาย (รวมทั้งหมด)</div>
       </div>
-      <div class="stat-pill success">
-        <div class="stat-num" id="dash-scanned">0</div>
-        <div class="stat-lbl">สแกนแล้ว</div>
+      <div class="stat-pill success" onclick="openDirectoryModal('completed')">
+        <div class="stat-num" id="dash-scanned">0</div><div class="stat-lbl">สแกนแล้ว ↗</div>
       </div>
-      <div class="stat-pill">
-        <div class="stat-num" id="dash-remain">207</div>
-        <div class="stat-lbl">คงเหลือ</div>
+      <div class="stat-pill" onclick="openDirectoryModal('pending')">
+        <div class="stat-num" id="dash-remain">207</div><div class="stat-lbl">คงเหลือ ↗</div>
       </div>
     </div>
-    
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-bar"></div>
-    </div>
-    <div class="progress-status">
-      <span>ความคืบหน้า</span>
-      <span id="dash-percent" style="font-weight:600;">0%</span>
-    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
   </div>
 
-  <!-- Navigator & Location Card -->
   <div class="card">
+    <button type="button" class="btn-open-dir" onclick="openDirectoryModal('all')">
+      <span>📑 <strong>สมุดผังรายการเครื่อง</strong> (คลิกเพื่อค้นหา/เลือก)</span>
+      <span>🔍 ❯</span>
+    </button>
+
     <div class="input-group">
-      <label class="input-label">เลือกลำดับรายการตารางเดิม (1 - 207)</label>
       <div class="nav-box">
-        <button type="button" class="btn-step" onclick="changeItemNo(-1)">◀ ย้อน</button>
-        <input type="number" inputmode="numeric" id="item_no" min="1" max="207" class="item-input" placeholder="เลข 1-207" oninput="onItemNoChange()">
+        <button type="button" class="btn-step" onclick="changeItemNo(-1)">◀ ย้อนกลับ</button>
+        <input type="number" inputmode="numeric" id="item_no" min="1" class="item-input" placeholder="ลำดับ" oninput="onItemNoChange()">
         <button type="button" class="btn-step" onclick="changeItemNo(1)">ถัดไป ▶</button>
       </div>
     </div>
@@ -685,35 +189,35 @@
     <div id="previewBox" class="info-banner">
       <div class="info-banner-header">
         <span id="previewTitleText">ข้อมูลเดิม</span>
-        <span id="scanStatusTag" class="scan-status-tag tag-pending">⚪ ยังไม่ได้บันทึก</span>
+        <div class="action-badge-group">
+          <!-- เพิ่มปุ่มลบรายการตรงนี้ -->
+          <button type="button" id="btnDeleteCurrent" class="btn-delete-active" onclick="deleteCurrentItem()">🗑️ ลบข้อมูล</button>
+          <span id="scanStatusTag" class="scan-status-tag tag-pending">⚪ ยังไม่ได้บันทึก</span>
+        </div>
       </div>
       <div id="previewDetail"></div>
     </div>
 
-    <div class="field-grid-2" style="margin-top: 8px;">
+    <div class="field-grid-2" style="margin-top: 6px;">
       <div class="input-group">
-        <label class="input-label">📍 อาคาร / ชั้น</label>
-        <input type="text" id="building" class="input-control" placeholder="เช่น 9/12">
+        <input type="text" id="building" class="input-control" placeholder="อาคาร/ชั้น เช่น 9/12">
       </div>
       <div class="input-group">
-        <label class="input-label">🏢 แผนก / จุดใช้งาน</label>
-        <input type="text" id="dept" class="input-control" placeholder="เช่น OPD ตรวจ 1">
+        <input type="text" id="dept" class="input-control" placeholder="จุดใช้งาน เช่น OPD 1">
       </div>
     </div>
   </div>
 
-  <!-- Section: New IT Set -->
   <div class="card section-itset">
-    <div class="card-header">
-      <div class="card-title">✨ ข้อมูลสแกนชุดคอมใหม่</div>
-      <button type="button" onclick="fillNoSN()" style="font-size:0.7rem; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; padding:3px 8px; border-radius:99px; cursor:pointer; font-weight:500;">เว้นว่าง S/N (-)</button>
+    <div class="card-header" style="margin-bottom:6px;">
+      <div class="card-title">✨ ข้อมูลคอมจัดสเปคใหม่</div>
+      <button type="button" onclick="fillNoSN()" style="font-size:0.65rem; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; padding:2px 8px; border-radius:99px; cursor:pointer;">เว้นว่าง S/N (-)</button>
     </div>
 
     <div class="input-group">
-      <label class="input-label">🏷️ ยี่ห้อชุดใหม่ (Brand)</label>
-      <input type="text" id="brand" class="input-control" placeholder="ระบุหรือเลือกยี่ห้อ">
+      <input type="text" id="brand" class="input-control" placeholder="คอมจัดสเปค (ระบุยี่ห้อ หรือเลือกด้านล่าง)">
       <div class="chips-slider">
-        <button type="button" class="chip-btn chip-diy" onclick="setBrand('ประกอบเอง')">🛠️ ประกอบเอง</button>
+        <button type="button" class="chip-btn chip-diy" onclick="setBrand('คอมจัดสเปค')">🛠️ คอมจัดสเปค</button>
         <button type="button" class="chip-btn" onclick="setBrand('Dell')">Dell</button>
         <button type="button" class="chip-btn" onclick="setBrand('HP')">HP</button>
         <button type="button" class="chip-btn" onclick="setBrand('Lenovo')">Lenovo</button>
@@ -723,7 +227,6 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">🔢 เลขครุภัณฑ์ (ใหม่)</label>
       <div class="input-addon-wrapper">
         <input type="text" id="asset_id" class="input-control" value="รพ.ผศ. 7440-009-0005-2569/" placeholder="เลขครุภัณฑ์">
         <div class="inline-actions">
@@ -734,7 +237,6 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">🖥️ 1. S/N จอภาพ (Monitor)</label>
       <div class="input-addon-wrapper">
         <input type="text" id="sn_monitor" class="input-control" placeholder="S/N จอภาพ">
         <div class="inline-actions">
@@ -745,7 +247,6 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">💻 2. S/N เครื่อง Mini PC / เคส</label>
       <div class="input-addon-wrapper">
         <input type="text" id="sn_minipc" class="input-control" placeholder="S/N Mini PC">
         <div class="inline-actions">
@@ -754,9 +255,19 @@
         </div>
       </div>
     </div>
+    
+    <!-- ช่อง S/N COM PC -->
+    <div class="input-group">
+      <div class="input-addon-wrapper">
+        <input type="text" id="sn_compc" class="input-control" placeholder="S/N COM PC">
+        <div class="inline-actions">
+          <button type="button" class="btn-icon-action btn-icon-scan" onclick="openScanner('sn_compc', 'S/N COM PC')">📷 สแกน</button>
+          <button type="button" class="btn-icon-action btn-icon-ocr" onclick="triggerOCR('sn_compc')">📸 OCR</button>
+        </div>
+      </div>
+    </div>
 
     <div class="input-group">
-      <label class="input-label">⌨️🖱️ 3. S/N เมาส์ & คีย์บอร์ด</label>
       <div class="input-addon-wrapper">
         <input type="text" id="sn_kbm" class="input-control" placeholder="S/N เมาส์+คีย์บอร์ด">
         <div class="inline-actions">
@@ -767,7 +278,6 @@
     </div>
 
     <div class="input-group">
-      <label class="input-label">🔋 4. S/N เครื่องสำรองไฟ (UPS)</label>
       <div class="input-addon-wrapper">
         <input type="text" id="sn_ups" class="input-control" placeholder="S/N UPS">
         <div class="inline-actions">
@@ -778,96 +288,84 @@
     </div>
   </div>
 
-  <!-- Section: Network & Hostname -->
   <div class="card section-network">
-    <div class="card-header">
-      <div class="card-title">🌐 ข้อมูลเน็ตเวิร์ก & บัญชีเครื่อง</div>
+    <div class="card-header" style="margin-bottom:6px;">
+      <div class="card-title">🌐 เน็ตเวิร์ก & บัญชีเครื่อง</div>
     </div>
 
     <button type="button" class="btn-one-shot" onclick="openScanner('network_all', 'QR Code 1-Shot')">
-      📷 สแกน QR 1-Shot จากจอคอม (Hostname + IP + MAC)
+      📷 สแกน QR หน้าจอคอม (Host+IP+MAC)
     </button>
 
     <div class="input-group">
-      <label class="input-label">💻 ชื่อเครื่อง (Hostname)</label>
-      <input type="text" id="hostname" class="input-control" style="text-transform:uppercase;" placeholder="เช่น CHANGIT52">
+      <input type="text" id="hostname" class="input-control" style="text-transform:uppercase;" placeholder="ชื่อเครื่อง (Hostname) เช่น CHANGIT52">
     </div>
 
     <div class="field-grid-2">
       <div class="input-group">
-        <label class="input-label">🌐 IP Address</label>
-        <input type="text" inputmode="decimal" id="ip_address" class="input-control" placeholder="192.168.1.184">
+        <input type="text" inputmode="decimal" id="ip_address" class="input-control" placeholder="IP: 192.168.1.184">
       </div>
       <div class="input-group">
-        <label class="input-label">🔗 MAC Address</label>
         <div class="input-addon-wrapper">
-          <input type="text" id="mac_address" class="input-control" style="text-transform:uppercase; padding-right:82px;" placeholder="A8-A1-59-..">
+          <input type="text" id="mac_address" class="input-control" style="text-transform:uppercase; padding-right:85px;" placeholder="MAC Address">
           <div class="inline-actions">
-            <button type="button" class="btn-icon-action btn-icon-scan" onclick="openScanner('mac_address', 'MAC Address')">📷 สแกน</button>
+            <!-- เพิ่มปุ่ม OCR ให้ MAC Address แบบครบถ้วน -->
+            <button type="button" class="btn-icon-action btn-icon-scan" style="padding:0 6px;" onclick="openScanner('mac_address', 'MAC Address')">📷</button>
+            <button type="button" class="btn-icon-action btn-icon-ocr" style="padding:0 6px;" onclick="triggerOCR('network_smart')">📸 OCR</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="input-group" style="margin-top: 6px;">
-      <label class="input-label">📝 หมายเหตุ</label>
-      <input type="text" id="remark" class="input-control" placeholder="เช่น ใช้งานปกติ, ยืมชั่วคราว">
-    </div>
-  </div>
-
-  <!-- Collapsible Records Table -->
-  <div class="card">
-    <div class="collapsible-trigger" onclick="toggleTable()">
-      <div class="card-title">
-        📊 รายการที่บันทึกแล้ว (<span id="totalCount" style="color:var(--primary);">0</span>)
-      </div>
-      <div style="font-size:0.75rem; color:var(--primary); font-weight:500;" id="tableToggleIcon">▼ แสดงตาราง</div>
-    </div>
-
-    <div id="tableWrapper" style="display:none; margin-top:10px;">
-      <div style="display:flex; justify-content:space-between; gap:6px; margin-bottom:8px;">
-        <button type="button" onclick="exportToCSV()" style="flex:1; padding:7px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:0.75rem; cursor:pointer;">📥 ส่งออก CSV</button>
-        <button type="button" onclick="fetchRecordsFromSheets(true)" style="padding:7px 12px; background:var(--teal); color:white; border:none; border-radius:8px; font-size:0.75rem; cursor:pointer;">🔄 ดึงสดจากชีต</button>
-      </div>
-      
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>จัดการ</th>
-              <th>ลำดับ</th>
-              <th>ชื่อเครื่อง</th>
-              <th>IP</th>
-              <th>MAC</th>
-              <th>เลขครุภัณฑ์</th>
-              <th>จุดใช้งาน</th>
-            </tr>
-          </thead>
-          <tbody id="dataTableBody"></tbody>
-        </table>
+    <div class="input-group" style="margin-top: 8px;">
+      <input type="text" id="remark" class="input-control" placeholder="หมายเหตุ (หรือเลือกปุ่มด้านล่าง)">
+      <div class="chips-slider" style="margin-top:4px;">
+        <button type="button" class="chip-btn" onclick="addRemark('ใช้งานปกติ')">✅ ใช้งานปกติ</button>
+        <button type="button" class="chip-btn" onclick="addRemark('ยืมชั่วคราว')">🔄 ยืมชั่วคราว</button>
+        <button type="button" class="chip-btn" onclick="addRemark('เครื่องสำรอง')">💻 เครื่องสำรอง</button>
+        <button type="button" class="chip-btn" onclick="addRemark('รอตรวจสอบ')">⏳ รอตรวจสอบ</button>
+        <button type="button" class="chip-btn" onclick="addRemark('ไม่มี UPS')">❌ ไม่มี UPS</button>
+        <button type="button" class="chip-btn" onclick="addRemark('ไม่มีจอ')">❌ ไม่มีจอ</button>
       </div>
     </div>
   </div>
 
+  <div style="text-align:center; margin-bottom:10px;">
+    <button type="button" onclick="exportToCSV()" style="padding:8px 16px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:0.8rem; cursor:pointer;">📥 ส่งออก CSV (สำหรับสำรองข้อมูล)</button>
+  </div>
 </div>
 
-<!-- Sticky Bottom Floating Action Dock -->
 <div class="dock-bar">
   <div class="dock-container">
-    <button class="btn-dock btn-dock-clear" type="button" id="btnClear" onclick="clearItemFields()">ล้าง</button>
-    <button class="btn-dock" type="button" id="btnCancelEdit" style="display:none; background:#64748b; color:#fff;" onclick="cancelEdit()">ยกเลิก</button>
+    <button class="btn-dock btn-dock-clear" type="button" id="btnClear" onclick="clearItemFields()">ล้างฟอร์ม</button>
+    <button class="btn-dock" type="button" id="btnCancelEdit" style="display:none; background:#64748b; color:#fff;" onclick="cancelEdit()">ยกเลิกแก้ไข</button>
     <button class="btn-dock btn-dock-save" type="button" id="btnSave" onclick="saveData()">💾 บันทึกข้อมูล</button>
   </div>
 </div>
 
-<!-- Modal & Tool Elements -->
+<div id="directoryModal">
+  <div class="dir-sheet">
+    <div class="dir-header">
+      <div class="dir-header-top">
+        <div class="dir-title">📑 ผังสำรวจรายการเครื่อง</div>
+        <button type="button" class="btn-close-dir" onclick="closeDirectoryModal()">✕</button>
+      </div>
+      <input type="text" id="dirSearchInput" class="dir-search-box" placeholder="🔍 ค้นหาแผนก, ชั้น, อาคาร หรือเลขลำดับ..." oninput="renderDirectoryList()">
+      <div class="dir-filter-tabs">
+        <button type="button" class="dir-tab active" id="tab-all" onclick="setDirFilter('all')">ทั้งหมด</button>
+        <button type="button" class="dir-tab" id="tab-pending" onclick="setDirFilter('pending')">⏳ รอลง (<span id="filterPendingCount">0</span>)</button>
+        <button type="button" class="dir-tab" id="tab-completed" onclick="setDirFilter('completed')">✅ ลงแล้ว (<span id="filterCompletedCount">0</span>)</button>
+      </div>
+    </div>
+    <div class="dir-list-body" id="dirListContainer"></div>
+  </div>
+</div>
+
 <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none" onchange="processOCR(event)">
-
-<div id="toast">บันทึกข้อมูลเรียบร้อยแล้ว</div>
-
+<div id="toast">แจ้งเตือน</div>
 <div id="scannerModal">
   <div class="modal-sheet">
-    <div id="modalTitle" style="font-size:0.95rem; font-weight:600; color:var(--slate-800);">กำลังสแกน...</div>
+    <div id="modalTitle" style="font-size:0.95rem; font-weight:600; color:var(--slate-800);">สแกนบาร์โค้ด...</div>
     <div id="modalReader"></div>
     <button type="button" class="btn-close-scanner" onclick="closeScanner()">❌ ปิดกล้อง</button>
   </div>
@@ -875,39 +373,37 @@
 
 <script>
   // Google Apps Script Web App URL
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_jTi2Jx1vJvKwykgvGZVBoc4_zq37G_H0QZHf6WpH20tQuVp2Yg-9Qil5Jnu5i0bvow/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzN0j6bawooEk2-3el7W-9dxug9VLKS3X3yUeL5SqYgKuUJnGqU10CTVOMrwZM1TlXn/exec";
 
   // Master Survey Dataset (207 items)
-  const masterSurveyList = [{"no": 1, "b_fl": "9/12", "dept": "พยาบาล หน้าลิฟต์", "brand": "Mini Pc  Beelink", "spec": "16 GB"}, {"no": 2, "b_fl": "9/12", "dept": "พยาบาล หน้าลิฟต์", "brand": "ยำ", "spec": "Windows 7 / 6 GB"}, {"no": 3, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 4, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "MINI PC Lenovo thinkCentre", "spec": "Windows 11 / 8 GB"}, {"no": 5, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 6, "b_fl": "9/12", "dept": "หมอ 1212", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 7, "b_fl": "9/12", "dept": "หมอ 1212", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 8, "b_fl": "9/12", "dept": "หมอ 1210", "brand": "ASUSPro", "spec": ""}, {"no": 9, "b_fl": "9/12", "dept": "หมอ 1210", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 10, "b_fl": "9/12", "dept": "หมอ ห้องผิวหนัง", "brand": "Dell All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 11, "b_fl": "9/12", "dept": "หมอ ห้องหมอตั๊กหว่า", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 12, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 13, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "HP ProDesk", "spec": ""}, {"no": 14, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "เครื่องบริจาค", "spec": ""}, {"no": 15, "b_fl": "9/10", "dept": "พยาบาล หอผู้ป่วย", "brand": "ACER Veritron", "spec": ""}, {"no": 16, "b_fl": "9/10", "dept": "พยาบาล หอผู้ป่วย", "brand": "ASUSPro", "spec": "8 GB"}, {"no": 17, "b_fl": "9/10", "dept": "หมอ ห้องตรวจ 1", "brand": "ACER Veritron", "spec": ""}, {"no": 18, "b_fl": "9/10", "dept": "หมอ ห้องตรวจ 1", "brand": "ASUSPro", "spec": "8 GB"}, {"no": 19, "b_fl": "9/9", "dept": "พยาบาล หอผู้ป่วย", "brand": "HP All-in-one", "spec": "8 GB"}, {"no": 20, "b_fl": "9/9", "dept": "พยาบาล หอผู้ป่วย", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 21, "b_fl": "9/8", "dept": "พยาบาล ผ่าตัด ห้องผ่าตัด", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 22, "b_fl": "9/8", "dept": "พยาบาล ผ่าตัด ห้องผ่าตัด", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 23, "b_fl": "9/8", "dept": "พยาบาล วิสัญญี", "brand": "Dell 790", "spec": "Windows 7 / 8 GB"}, {"no": 24, "b_fl": "9/8", "dept": "พยาบาล วิสัญญี", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 25, "b_fl": "9/8", "dept": "หน.แผนก วิสัญญี", "brand": "dell บริจาก สปภ.", "spec": "Windows 7 / 2 GB"}, {"no": 26, "b_fl": "9/8", "dept": "พนักงาน ผ่าตัด ห้องผ่าตัด", "brand": "เครื่องบริจาค", "spec": "Windows 10 / 4 GB"}, {"no": 27, "b_fl": "9/8", "dept": "พนักงาน ผ่าตัด ห้องผ่าตัด", "brand": "ASUSPro", "spec": "Windows 10 / 4 GB"}, {"no": 28, "b_fl": "9/7", "dept": "พยาบาล icu ICU", "brand": "ประกอบ", "spec": "Windows 7 / 8 GB"}, {"no": 29, "b_fl": "9/7", "dept": "พยาบาล icu ICU", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 30, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "MINI PC N100", "spec": "Windows 10 / 16 GB"}, {"no": 31, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 32, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 33, "b_fl": "9/6", "dept": "หมอ ตรวจ 1", "brand": "ASUSPro", "spec": "Windows 11 / 8 GB"}, {"no": 34, "b_fl": "9/6", "dept": "หมอ ตรวจ 2", "brand": "ASUSPro", "spec": ""}, {"no": 35, "b_fl": "9/6", "dept": "หมอ ตรวจ 3", "brand": "ASUSPro", "spec": ""}, {"no": 36, "b_fl": "9/6", "dept": "หมอ ตรวจ 4", "brand": "ASUSPro", "spec": ""}, {"no": 37, "b_fl": "9/6", "dept": "หมอ ตรวจ 5", "brand": "ASUSPro", "spec": ""}, {"no": 38, "b_fl": "9/6", "dept": "หมอ ตรวจ 6", "brand": "ASUSPro", "spec": ""}, {"no": 39, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 1", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 40, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 2", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 41, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 3", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 42, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 4", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 43, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 5", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 44, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 6", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 45, "b_fl": "9/5", "dept": "พยาบาล หน้าห้อง สูติ", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 46, "b_fl": "9/5", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": "8 GB"}, {"no": 47, "b_fl": "9/5", "dept": "หมอ ตรวจ 3", "brand": "Dell 790", "spec": "12 GB"}, {"no": 48, "b_fl": "9/5", "dept": "หมอ ตรวจ 2", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 49, "b_fl": "9/5", "dept": "พยาบาล หน้าห้อง สูติ", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 50, "b_fl": "9/5", "dept": "หมอ ตรวจ PV1", "brand": "ยำ", "spec": "Windows 7 / 4 GB"}, {"no": 51, "b_fl": "9/5", "dept": "หมอ ตรวจ PV4", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 52, "b_fl": "9/5", "dept": "หมอ ตรวจ PV3", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 53, "b_fl": "9/5", "dept": "พยาบาล จุด 6", "brand": "Dell 790", "spec": "Windows 10 / 10 GB"}, {"no": 54, "b_fl": "9/5", "dept": "พยาบาล จุด 6", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 55, "b_fl": "9/5", "dept": "พยาบาล จุดตรวจตา", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 56, "b_fl": "9/5", "dept": "หมอ ตรวจตา 1", "brand": "Dell 790", "spec": "Windows 7 / 12 GB"}, {"no": 57, "b_fl": "9/5", "dept": "พยาบาล จุด 2", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 58, "b_fl": "9/5", "dept": "พยาบาล จุดตรวจ หู คอ จมูก", "brand": "MINI PC Lenovo thinkCentre", "spec": "Windows 11 / 8 GB"}, {"no": 59, "b_fl": "9/5", "dept": "หมอ ตรวจตา3", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 61, "b_fl": "9/5", "dept": "หมอ ตรวจ ENT2", "brand": "Dell 790", "spec": "4 GB"}, {"no": 62, "b_fl": "9/5", "dept": "หมอ OPD โสต คอ นาสิก", "brand": "", "spec": "8 GB"}, {"no": 63, "b_fl": "9/5", "dept": "หมอ ตรวจการได้ยิน", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 64, "b_fl": "9/4", "dept": "opd opd เวชศาสตร์", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 65, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 1", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 66, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 2", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 67, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 3", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 68, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 4", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 69, "b_fl": "9/4", "dept": "พนักงาน อรรถ บำบัด", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 70, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 71, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 72, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell Vostro", "spec": "Windows 10 / 4 GB"}, {"no": 73, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 74, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 75, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 76, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 77, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 78, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 79, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 80, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 10 / 4 GB"}, {"no": 81, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": ""}, {"no": 82, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": ""}, {"no": 83, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": ""}, {"no": 84, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": ""}, {"no": 85, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ประกอบ", "spec": ""}, {"no": 86, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 7 / 8 GB"}, {"no": 87, "b_fl": "9/2", "dept": "พนักงาน การเงิน", "brand": "HP All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 88, "b_fl": "9/2", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "Mini Pc  Beelink", "spec": "Windows 11 / 16 GB"}, {"no": 89, "b_fl": "9/2", "dept": "พยาบาล ห้องเฝือก", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 90, "b_fl": "9/2", "dept": "พยาบาล ตรวจ 9", "brand": "ASUSPro", "spec": "Windows 11 / 8 GB"}, {"no": 91, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 92, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 93, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 94, "b_fl": "9/2", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 95, "b_fl": "9/2", "dept": "หมอ ตรวจ 2", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 96, "b_fl": "9/2", "dept": "หมอ ตรวจ 3", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 97, "b_fl": "9/2", "dept": "หมอ ตรวจ 4", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 98, "b_fl": "9/2", "dept": "หมอ ตรวจ 5", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 99, "b_fl": "9/2", "dept": "หมอ ตรวจ 6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 100, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 101, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "Dell 990", "spec": "Windows 11 / 8 GB"}, {"no": 102, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 103, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 104, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 105, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "ประกอบ", "spec": ""}, {"no": 106, "b_fl": "9/1", "dept": "พยาบาล จุด 4", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 107, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 108, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 109, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 110, "b_fl": "9/1", "dept": "พยาบาล จุด 6", "brand": "ประกอบ spare ศูนย์คอม ทดแทน", "spec": "Windows 10"}, {"no": 111, "b_fl": "9/1", "dept": "พยาบาล จุด 7", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 112, "b_fl": "9/1", "dept": "พยาบาล จุด 9", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 113, "b_fl": "9/1", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": ""}, {"no": 114, "b_fl": "9/1", "dept": "หมอ ตรวจ 2", "brand": "HP ProDesk", "spec": ""}, {"no": 115, "b_fl": "9/1", "dept": "หมอ ตรวจ 3", "brand": "HP ProDesk", "spec": ""}, {"no": 116, "b_fl": "9/1", "dept": "หมอ ตรวจ 4", "brand": "Dell 790", "spec": ""}, {"no": 117, "b_fl": "9/1", "dept": "หมอ ตรวจ 5", "brand": "Dell 790", "spec": ""}, {"no": 118, "b_fl": "9/1", "dept": "หมอ ตรวจ 6", "brand": "Dell 790", "spec": ""}, {"no": 119, "b_fl": "9/1", "dept": "หมอ ตรวจ 7", "brand": "Dell 790", "spec": ""}, {"no": 120, "b_fl": "9/1", "dept": "หมอ ตรวจ 8", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 121, "b_fl": "9/1", "dept": "หมอ ตรวจ 9", "brand": "ACER Veritron", "spec": ""}, {"no": 122, "b_fl": "9/1", "dept": "หมอ ตรวจ 10", "brand": "Dell 790", "spec": ""}, {"no": 123, "b_fl": "9/1", "dept": "หมอ ตรวจ 11", "brand": "Dell 790", "spec": ""}, {"no": 124, "b_fl": "9/1", "dept": "หมอ ตรวจ 12", "brand": "Dell 790", "spec": ""}, {"no": 125, "b_fl": "9/1", "dept": "หมอ ตรวจ 13 -ไม่มีหมอ", "brand": "Dell 790", "spec": ""}, {"no": 126, "b_fl": "9/1", "dept": "หมอ ตรวจ 14", "brand": "Dell 790", "spec": ""}, {"no": 127, "b_fl": "9/1", "dept": "หมอ ตรวจ 15 - Telemed", "brand": "Dell All-in-one", "spec": ""}, {"no": 128, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 129, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP All-in-one", "spec": "Windows 10 / 4 GB"}, {"no": 130, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 131, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "ACER Veritron", "spec": ""}, {"no": 132, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": ""}, {"no": 133, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "ประกอบ", "spec": ""}, {"no": 134, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": ""}, {"no": 135, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 136, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 137, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "HP ProDesk", "spec": ""}, {"no": 138, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "Dell 790", "spec": ""}, {"no": 139, "b_fl": "9/1", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 7 / 8 GB"}, {"no": 140, "b_fl": "9/1", "dept": "พนักงาน ห้องยา", "brand": "ACER Veritron", "spec": ""}, {"no": 141, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตู้คิว", "brand": "HP ProDesk", "spec": ""}, {"no": 142, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตู้คิว", "brand": "HP ProDesk", "spec": ""}, {"no": 143, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "ASUSPro", "spec": ""}, {"no": 144, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 145, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "Dell 790", "spec": ""}, {"no": 146, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "ประกอบ", "spec": "Windows 7 / 8 GB"}, {"no": 147, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 148, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 149, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - การเงิน", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 150, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - การเงิน", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 151, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 152, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 153, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 154, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 155, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 156, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 157, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 158, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 159, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "ประกอบ", "spec": ""}, {"no": 160, "b_fl": "1/6", "dept": "หน.แผนก สำนัก", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 161, "b_fl": "1/6", "dept": "หมอ สำนัก สำนัก - ผอ.", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 162, "b_fl": "1/6", "dept": "หมอ หมอตาล", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 163, "b_fl": "1/6", "dept": "หมอ หมอฟ้า", "brand": "HP All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 164, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 165, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 166, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "Dell 790", "spec": "Windows 10 / 6 GB"}, {"no": 167, "b_fl": "1/4", "dept": "พยาบาล ward1/4", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 168, "b_fl": "1/4", "dept": "พยาบาล ward1/4", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 169, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 170, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "ประกอบ", "spec": ""}, {"no": 171, "b_fl": "1/3", "dept": "หมอ ไตเทียม", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 172, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 173, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 174, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 175, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "เครื่องบริจาค", "spec": "Windows 7 / 8 GB"}, {"no": 176, "b_fl": "1/1", "dept": "หมอ ER", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 177, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 178, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "HP ProDesk", "spec": ""}, {"no": 179, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "ACER Veritron", "spec": ""}, {"no": 180, "b_fl": "1/1", "dept": "หมอ ER", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 181, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "เครื่องบริจาค", "spec": ""}, {"no": 182, "b_fl": "2/8", "dept": "opd แผนโบราณ", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 183, "b_fl": "2/8", "dept": "หมอ ตรวจโรค", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 184, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 185, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 186, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 187, "b_fl": "2/7", "dept": "opd จิตเวช", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 188, "b_fl": "2/7", "dept": "พยาบาล จิตเวช", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 189, "b_fl": "2/7", "dept": "พยาบาล จิตเวช", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 190, "b_fl": "2/7", "dept": "หมอ จิตเวช", "brand": "HP ProDesk", "spec": ""}, {"no": 191, "b_fl": "2/6", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 192, "b_fl": "2/6", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 193, "b_fl": "2/5", "dept": "พยาบาล", "brand": "ประกอบ", "spec": "Windows 10 / 16 GB"}, {"no": 194, "b_fl": "2/5", "dept": "พยาบาล", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 195, "b_fl": "2/5", "dept": "พยาบาล", "brand": "ACER Veritron", "spec": "Windows 7 / 2 GB"}, {"no": 196, "b_fl": "2/4", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 197, "b_fl": "2/4", "dept": "พยาบาล", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 198, "b_fl": "2/3", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 16 GB"}, {"no": 199, "b_fl": "2/3", "dept": "พยาบาล", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 200, "b_fl": "2/1", "dept": "หมอ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 201, "b_fl": "2/1", "dept": "พนักงาน ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 202, "b_fl": "2/1", "dept": "พนักงาน ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 203, "b_fl": "2/1", "dept": "พนักงาน ทะเบียน", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 204, "b_fl": "2/1", "dept": "พนักงาน ทะเบียน", "brand": "Lenovo เก่า", "spec": "Windows 7 / 8 GB"}, {"no": 205, "b_fl": "2/1", "dept": "พนักงาน คลัง - ไม่ค่อยใช้", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 206, "b_fl": "2/1", "dept": "พนักงาน คลัง", "brand": "Dell Optiplex 380", "spec": "Windows 7 / 2 GB"}, {"no": 207, "b_fl": "2/1", "dept": "พนักงาน คลัง", "brand": "เครื่องบริจาค", "spec": ""}]
+  const masterSurveyList = [{"no": 1, "b_fl": "9/12", "dept": "พยาบาล หน้าลิฟต์", "brand": "Mini Pc  Beelink", "spec": "16 GB"}, {"no": 2, "b_fl": "9/12", "dept": "พยาบาล หน้าลิฟต์", "brand": "ยำ", "spec": "Windows 7 / 6 GB"}, {"no": 3, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 4, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "MINI PC Lenovo thinkCentre", "spec": "Windows 11 / 8 GB"}, {"no": 5, "b_fl": "9/12", "dept": "พยาบาล ในห้อง", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 6, "b_fl": "9/12", "dept": "หมอ 1212", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 7, "b_fl": "9/12", "dept": "หมอ 1212", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 8, "b_fl": "9/12", "dept": "หมอ 1210", "brand": "ASUSPro", "spec": ""}, {"no": 9, "b_fl": "9/12", "dept": "หมอ 1210", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 10, "b_fl": "9/12", "dept": "หมอ ห้องผิวหนัง", "brand": "Dell All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 11, "b_fl": "9/12", "dept": "หมอ ห้องหมอตั๊กหว่า", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 12, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 13, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "HP ProDesk", "spec": ""}, {"no": 14, "b_fl": "9/11", "dept": "พยาบาล ward 9/11", "brand": "เครื่องบริจาค", "spec": ""}, {"no": 15, "b_fl": "9/10", "dept": "พยาบาล หอผู้ป่วย", "brand": "ACER Veritron", "spec": ""}, {"no": 16, "b_fl": "9/10", "dept": "พยาบาล หอผู้ป่วย", "brand": "ASUSPro", "spec": "8 GB"}, {"no": 17, "b_fl": "9/10", "dept": "หมอ ห้องตรวจ 1", "brand": "ACER Veritron", "spec": ""}, {"no": 18, "b_fl": "9/10", "dept": "หมอ ห้องตรวจ 1", "brand": "ASUSPro", "spec": "8 GB"}, {"no": 19, "b_fl": "9/9", "dept": "พยาบาล หอผู้ป่วย", "brand": "HP All-in-one", "spec": "8 GB"}, {"no": 20, "b_fl": "9/9", "dept": "พยาบาล หอผู้ป่วย", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 21, "b_fl": "9/8", "dept": "พยาบาล ผ่าตัด ห้องผ่าตัด", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 22, "b_fl": "9/8", "dept": "พยาบาล ผ่าตัด ห้องผ่าตัด", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 23, "b_fl": "9/8", "dept": "พยาบาล วิสัญญี", "brand": "Dell 790", "spec": "Windows 7 / 8 GB"}, {"no": 24, "b_fl": "9/8", "dept": "พยาบาล วิสัญญี", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 25, "b_fl": "9/8", "dept": "หน.แผนก วิสัญญี", "brand": "dell บริจาก สปภ.", "spec": "Windows 7 / 2 GB"}, {"no": 26, "b_fl": "9/8", "dept": "พนักงาน ผ่าตัด ห้องผ่าตัด", "brand": "เครื่องบริจาค", "spec": "Windows 10 / 4 GB"}, {"no": 27, "b_fl": "9/8", "dept": "พนักงาน ผ่าตัด ห้องผ่าตัด", "brand": "ASUSPro", "spec": "Windows 10 / 4 GB"}, {"no": 28, "b_fl": "9/7", "dept": "พยาบาล icu ICU", "brand": "ประกอบ", "spec": "Windows 7 / 8 GB"}, {"no": 29, "b_fl": "9/7", "dept": "พยาบาล icu ICU", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 30, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "MINI PC N100", "spec": "Windows 10 / 16 GB"}, {"no": 31, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 32, "b_fl": "9/6", "dept": "พยาบาล หน้าห้อง", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 33, "b_fl": "9/6", "dept": "หมอ ตรวจ 1", "brand": "ASUSPro", "spec": "Windows 11 / 8 GB"}, {"no": 34, "b_fl": "9/6", "dept": "หมอ ตรวจ 2", "brand": "ASUSPro", "spec": ""}, {"no": 35, "b_fl": "9/6", "dept": "หมอ ตรวจ 3", "brand": "ASUSPro", "spec": ""}, {"no": 36, "b_fl": "9/6", "dept": "หมอ ตรวจ 4", "brand": "ASUSPro", "spec": ""}, {"no": 37, "b_fl": "9/6", "dept": "หมอ ตรวจ 5", "brand": "ASUSPro", "spec": ""}, {"no": 38, "b_fl": "9/6", "dept": "หมอ ตรวจ 6", "brand": "ASUSPro", "spec": ""}, {"no": 39, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 1", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 40, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 2", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 41, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 3", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 42, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 4", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 43, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 5", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 44, "b_fl": "9/6", "dept": "หมอ ห้องตรวจศัล 6", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 45, "b_fl": "9/5", "dept": "พยาบาล หน้าห้อง สูติ", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 46, "b_fl": "9/5", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": "8 GB"}, {"no": 47, "b_fl": "9/5", "dept": "หมอ ตรวจ 3", "brand": "Dell 790", "spec": "12 GB"}, {"no": 48, "b_fl": "9/5", "dept": "หมอ ตรวจ 2", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 49, "b_fl": "9/5", "dept": "พยาบาล หน้าห้อง สูติ", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 50, "b_fl": "9/5", "dept": "หมอ ตรวจ PV1", "brand": "ยำ", "spec": "Windows 7 / 4 GB"}, {"no": 51, "b_fl": "9/5", "dept": "หมอ ตรวจ PV4", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 52, "b_fl": "9/5", "dept": "หมอ ตรวจ PV3", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 53, "b_fl": "9/5", "dept": "พยาบาล จุด 6", "brand": "Dell 790", "spec": "Windows 10 / 10 GB"}, {"no": 54, "b_fl": "9/5", "dept": "พยาบาล จุด 6", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 55, "b_fl": "9/5", "dept": "พยาบาล จุดตรวจตา", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 56, "b_fl": "9/5", "dept": "หมอ ตรวจตา 1", "brand": "Dell 790", "spec": "Windows 7 / 12 GB"}, {"no": 57, "b_fl": "9/5", "dept": "พยาบาล จุด 2", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 58, "b_fl": "9/5", "dept": "พยาบาล จุดตรวจ หู คอ จมูก", "brand": "MINI PC Lenovo thinkCentre", "spec": "Windows 11 / 8 GB"}, {"no": 59, "b_fl": "9/5", "dept": "หมอ ตรวจตา3", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 61, "b_fl": "9/5", "dept": "หมอ ตรวจ ENT2", "brand": "Dell 790", "spec": "4 GB"}, {"no": 62, "b_fl": "9/5", "dept": "หมอ OPD โสต คอ นาสิก", "brand": "", "spec": "8 GB"}, {"no": 63, "b_fl": "9/5", "dept": "หมอ ตรวจการได้ยิน", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 64, "b_fl": "9/4", "dept": "opd opd เวชศาสตร์", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 65, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 1", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 66, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 2", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 67, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 3", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 68, "b_fl": "9/4", "dept": "หมอ ห้องตราจ 4", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 69, "b_fl": "9/4", "dept": "พนักงาน อรรถ บำบัด", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 70, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 71, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 72, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "Dell Vostro", "spec": "Windows 10 / 4 GB"}, {"no": 73, "b_fl": "9/4", "dept": "พนักงาน กายภาพ", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 74, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 75, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 76, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 77, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 78, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell Optiplex 390", "spec": "Windows 10 / 8 GB"}, {"no": 79, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 80, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 10 / 4 GB"}, {"no": 81, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": ""}, {"no": 82, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": ""}, {"no": 83, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": ""}, {"no": 84, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ACER Veritron", "spec": ""}, {"no": 85, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "ประกอบ", "spec": ""}, {"no": 86, "b_fl": "9/3", "dept": "พนักงาน LAB", "brand": "Dell 790", "spec": "Windows 7 / 8 GB"}, {"no": 87, "b_fl": "9/2", "dept": "พนักงาน การเงิน", "brand": "HP All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 88, "b_fl": "9/2", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "Mini Pc  Beelink", "spec": "Windows 11 / 16 GB"}, {"no": 89, "b_fl": "9/2", "dept": "พยาบาล ห้องเฝือก", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 90, "b_fl": "9/2", "dept": "พยาบาล ตรวจ 9", "brand": "ASUSPro", "spec": "Windows 11 / 8 GB"}, {"no": 91, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 92, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 93, "b_fl": "9/2", "dept": "พยาบาล จุด 1", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 94, "b_fl": "9/2", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 95, "b_fl": "9/2", "dept": "หมอ ตรวจ 2", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 96, "b_fl": "9/2", "dept": "หมอ ตรวจ 3", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 97, "b_fl": "9/2", "dept": "หมอ ตรวจ 4", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 98, "b_fl": "9/2", "dept": "หมอ ตรวจ 5", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 99, "b_fl": "9/2", "dept": "หมอ ตรวจ 6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 100, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 101, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "Dell 990", "spec": "Windows 11 / 8 GB"}, {"no": 102, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 11 / 8 GB"}, {"no": 103, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 104, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 105, "b_fl": "9/2", "dept": "พนักงาน ห้องยา", "brand": "ประกอบ", "spec": ""}, {"no": 106, "b_fl": "9/1", "dept": "พยาบาล จุด 4", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 107, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 108, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 109, "b_fl": "9/1", "dept": "พยาบาล จุด 5", "brand": "ACER Veritron", "spec": ""}, {"no": 110, "b_fl": "9/1", "dept": "พยาบาล จุด 6", "brand": "ประกอบ spare ศูนย์คอม ทดแทน", "spec": "Windows 10"}, {"no": 111, "b_fl": "9/1", "dept": "พยาบาล จุด 7", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 112, "b_fl": "9/1", "dept": "พยาบาล จุด 9", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 113, "b_fl": "9/1", "dept": "หมอ ตรวจ 1", "brand": "Dell 790", "spec": ""}, {"no": 114, "b_fl": "9/1", "dept": "หมอ ตรวจ 2", "brand": "HP ProDesk", "spec": ""}, {"no": 115, "b_fl": "9/1", "dept": "หมอ ตรวจ 3", "brand": "HP ProDesk", "spec": ""}, {"no": 116, "b_fl": "9/1", "dept": "หมอ ตรวจ 4", "brand": "Dell 790", "spec": ""}, {"no": 117, "b_fl": "9/1", "dept": "หมอ ตรวจ 5", "brand": "Dell 790", "spec": ""}, {"no": 118, "b_fl": "9/1", "dept": "หมอ ตรวจ 6", "brand": "Dell 790", "spec": ""}, {"no": 119, "b_fl": "9/1", "dept": "หมอ ตรวจ 7", "brand": "Dell 790", "spec": ""}, {"no": 120, "b_fl": "9/1", "dept": "หมอ ตรวจ 8", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 121, "b_fl": "9/1", "dept": "หมอ ตรวจ 9", "brand": "ACER Veritron", "spec": ""}, {"no": 122, "b_fl": "9/1", "dept": "หมอ ตรวจ 10", "brand": "Dell 790", "spec": ""}, {"no": 123, "b_fl": "9/1", "dept": "หมอ ตรวจ 11", "brand": "Dell 790", "spec": ""}, {"no": 124, "b_fl": "9/1", "dept": "หมอ ตรวจ 12", "brand": "Dell 790", "spec": ""}, {"no": 125, "b_fl": "9/1", "dept": "หมอ ตรวจ 13 -ไม่มีหมอ", "brand": "Dell 790", "spec": ""}, {"no": 126, "b_fl": "9/1", "dept": "หมอ ตรวจ 14", "brand": "Dell 790", "spec": ""}, {"no": 127, "b_fl": "9/1", "dept": "หมอ ตรวจ 15 - Telemed", "brand": "Dell All-in-one", "spec": ""}, {"no": 128, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 129, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP All-in-one", "spec": "Windows 10 / 4 GB"}, {"no": 130, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 131, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "ACER Veritron", "spec": ""}, {"no": 132, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": ""}, {"no": 133, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "ประกอบ", "spec": ""}, {"no": 134, "b_fl": "9/1", "dept": "พนักงาน สังคมสงเคราะห์", "brand": "HP ProDesk", "spec": ""}, {"no": 135, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 136, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "ACER Veritron", "spec": "Windows 10 / 4 GB"}, {"no": 137, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "HP ProDesk", "spec": ""}, {"no": 138, "b_fl": "9/1", "dept": "พนักงาน เวชระเบียน", "brand": "Dell 790", "spec": ""}, {"no": 139, "b_fl": "9/1", "dept": "พนักงาน ห้องยา", "brand": "HP ProDesk", "spec": "Windows 7 / 8 GB"}, {"no": 140, "b_fl": "9/1", "dept": "พนักงาน ห้องยา", "brand": "ACER Veritron", "spec": ""}, {"no": 141, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตู้คิว", "brand": "HP ProDesk", "spec": ""}, {"no": 142, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตู้คิว", "brand": "HP ProDesk", "spec": ""}, {"no": 143, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "ASUSPro", "spec": ""}, {"no": 144, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 145, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - ตรวจสอบยา", "brand": "Dell 790", "spec": ""}, {"no": 146, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "ประกอบ", "spec": "Windows 7 / 8 GB"}, {"no": 147, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 148, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - สติ๊กเกอร์ยา", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 149, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - การเงิน", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 150, "b_fl": "9/1", "dept": "พนักงาน ห้องยา - การเงิน", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 151, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 152, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 153, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 154, "b_fl": "1/6", "dept": "พยาบาล ward1/6", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 155, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 156, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 157, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "ACER Veritron", "spec": "Windows 7 / 4 GB"}, {"no": 158, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 159, "b_fl": "1/6", "dept": "พนักงาน สำนัก", "brand": "ประกอบ", "spec": ""}, {"no": 160, "b_fl": "1/6", "dept": "หน.แผนก สำนัก", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 161, "b_fl": "1/6", "dept": "หมอ สำนัก สำนัก - ผอ.", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 162, "b_fl": "1/6", "dept": "หมอ หมอตาล", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 163, "b_fl": "1/6", "dept": "หมอ หมอฟ้า", "brand": "HP All-in-one", "spec": "Windows 10 / 8 GB"}, {"no": 164, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 165, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 166, "b_fl": "1/5", "dept": "พยาบาล ward1/5", "brand": "Dell 790", "spec": "Windows 10 / 6 GB"}, {"no": 167, "b_fl": "1/4", "dept": "พยาบาล ward1/4", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 168, "b_fl": "1/4", "dept": "พยาบาล ward1/4", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 169, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 170, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "ประกอบ", "spec": ""}, {"no": 171, "b_fl": "1/3", "dept": "หมอ ไตเทียม", "brand": "Mini Pc  Beelink", "spec": ""}, {"no": 172, "b_fl": "1/3", "dept": "พยาบาล ไตเทียม", "brand": "MINI PC Lenovo thinkCentre", "spec": ""}, {"no": 173, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 174, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 175, "b_fl": "1/3", "dept": "พยาบาล micu MICU", "brand": "เครื่องบริจาค", "spec": "Windows 7 / 8 GB"}, {"no": 176, "b_fl": "1/1", "dept": "หมอ ER", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 177, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 178, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "HP ProDesk", "spec": ""}, {"no": 179, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "ACER Veritron", "spec": ""}, {"no": 180, "b_fl": "1/1", "dept": "หมอ ER", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 181, "b_fl": "1/1", "dept": "พยาบาล ER", "brand": "เครื่องบริจาค", "spec": ""}, {"no": 182, "b_fl": "2/8", "dept": "opd แผนโบราณ", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 183, "b_fl": "2/8", "dept": "หมอ ตรวจโรค", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 184, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 185, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 186, "b_fl": "2/8", "dept": "ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 187, "b_fl": "2/7", "dept": "opd จิตเวช", "brand": "HP ProDesk", "spec": "Windows 10 / 4 GB"}, {"no": 188, "b_fl": "2/7", "dept": "พยาบาล จิตเวช", "brand": "ประกอบ", "spec": "Windows 10 / 8 GB"}, {"no": 189, "b_fl": "2/7", "dept": "พยาบาล จิตเวช", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 190, "b_fl": "2/7", "dept": "หมอ จิตเวช", "brand": "HP ProDesk", "spec": ""}, {"no": 191, "b_fl": "2/6", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 192, "b_fl": "2/6", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 193, "b_fl": "2/5", "dept": "พยาบาล", "brand": "ประกอบ", "spec": "Windows 10 / 16 GB"}, {"no": 194, "b_fl": "2/5", "dept": "พยาบาล", "brand": "HP All-in-one", "spec": "Windows 11 / 8 GB"}, {"no": 195, "b_fl": "2/5", "dept": "พยาบาล", "brand": "ACER Veritron", "spec": "Windows 7 / 2 GB"}, {"no": 196, "b_fl": "2/4", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 8 GB"}, {"no": 197, "b_fl": "2/4", "dept": "พยาบาล", "brand": "HP ProDesk", "spec": "Windows 7 / 4 GB"}, {"no": 198, "b_fl": "2/3", "dept": "พยาบาล", "brand": "Mini Pc", "spec": "Windows 11 / 16 GB"}, {"no": 199, "b_fl": "2/3", "dept": "พยาบาล", "brand": "Dell 790", "spec": "Windows 10 / 8 GB"}, {"no": 200, "b_fl": "2/1", "dept": "หมอ", "brand": "Dell 790", "spec": "Windows 7 / 2 GB"}, {"no": 201, "b_fl": "2/1", "dept": "พนักงาน ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 202, "b_fl": "2/1", "dept": "พนักงาน ธุรการ", "brand": "Dell 790", "spec": "Windows 7 / 4 GB"}, {"no": 203, "b_fl": "2/1", "dept": "พนักงาน ทะเบียน", "brand": "ASUSPro", "spec": "Windows 10 / 8 GB"}, {"no": 204, "b_fl": "2/1", "dept": "พนักงาน ทะเบียน", "brand": "Lenovo เก่า", "spec": "Windows 7 / 8 GB"}, {"no": 205, "b_fl": "2/1", "dept": "พนักงาน คลัง - ไม่ค่อยใช้", "brand": "HP ProDesk", "spec": "Windows 10 / 8 GB"}, {"no": 206, "b_fl": "2/1", "dept": "พนักงาน คลัง", "brand": "Dell Optiplex 380", "spec": "Windows 7 / 2 GB"}, {"no": 207, "b_fl": "2/1", "dept": "พนักงาน คลัง", "brand": "เครื่องบริจาค", "spec": ""}];
   let surveyMasterMap = {};
   masterSurveyList.forEach(item => { surveyMasterMap[item.no] = item; });
 
-  // State
   let records = [];
   let editIndex = -1;
   let currentTargetField = '';
   let html5QrCode = null;
+  let currentDirFilter = 'all';
 
   function showToast(msg) {
     const t = document.getElementById("toast");
-    t.innerText = msg;
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2600);
+    t.innerText = msg; t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2000);
   }
 
   function getThaiDateTimeString() {
-    const d = new Date();
-    const pad = n => String(n).padStart(2, '0');
+    const d = new Date(); const pad = n => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
-  function setBrand(name) {
-    document.getElementById('brand').value = name;
-  }
+  function setBrand(name) { document.getElementById('brand').value = name; }
+  function addRemark(txt) { document.getElementById('remark').value = txt; }
 
   function fillNoSN() {
     document.getElementById('sn_monitor').value = '-';
     document.getElementById('sn_minipc').value = '-';
+    document.getElementById('sn_compc').value = '-';
     document.getElementById('sn_kbm').value = '-';
     document.getElementById('sn_ups').value = '-';
   }
@@ -919,68 +415,115 @@
   }
 
   function playBeep() {
-    if (navigator.vibrate) navigator.vibrate(60);
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(950, ctx.currentTime);
-      osc.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.08);
-    } catch(e) {}
-  }
-
-  function toggleTable() {
-    const w = document.getElementById('tableWrapper');
-    const ic = document.getElementById('tableToggleIcon');
-    if (w.style.display === 'none') {
-      w.style.display = 'block';
-      ic.innerText = '▲ ซ่อนตาราง';
-    } else {
-      w.style.display = 'none';
-      ic.innerText = '▼ แสดงตาราง';
-    }
+    if (navigator.vibrate) navigator.vibrate(50);
   }
 
   function updateDashboard() {
-    const total = 207;
+    let extraItems = records.filter(r => parseInt(r.item_no) > 207).length;
+    const totalTarget = 207 + extraItems; 
+    
     const scanned = records.length;
-    const remain = Math.max(0, total - scanned);
-    const percent = Math.min(100, Math.round((scanned / total) * 100));
+    const remain = Math.max(0, totalTarget - scanned);
+    const percent = Math.min(100, Math.round((scanned / totalTarget) * 100));
 
+    document.getElementById('dash-target').innerText = totalTarget;
     document.getElementById('dash-scanned').innerText = scanned;
     document.getElementById('dash-remain').innerText = remain;
     document.getElementById('progress-bar').style.width = percent + '%';
-    document.getElementById('dash-percent').innerText = percent + '%';
-    document.getElementById('totalCount').innerText = scanned;
+    
+    document.getElementById('filterCompletedCount').innerText = scanned;
+    document.getElementById('filterPendingCount').innerText = remain;
   }
 
-  // ดึงข้อมูลจริงจาก Google Sheets แบบ Real-time (doGet)
+  function openDirectoryModal(filter = 'all') {
+    currentDirFilter = filter;
+    document.querySelectorAll('.dir-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${filter}`).classList.add('active');
+    document.getElementById('directoryModal').style.display = 'flex';
+    document.getElementById('dirSearchInput').value = '';
+    renderDirectoryList();
+  }
+
+  function closeDirectoryModal() { document.getElementById('directoryModal').style.display = 'none'; }
+
+  function setDirFilter(f) {
+    currentDirFilter = f;
+    document.querySelectorAll('.dir-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${f}`).classList.add('active');
+    renderDirectoryList();
+  }
+
+  function renderDirectoryList() {
+    const container = document.getElementById('dirListContainer');
+    const q = (document.getElementById('dirSearchInput').value || '').trim().toLowerCase();
+    container.innerHTML = '';
+    let matched = 0;
+
+    let allItems = [...masterSurveyList];
+    records.forEach(r => {
+      let n = parseInt(r.item_no);
+      if (n > 207 && !allItems.find(i => i.no === n)) {
+        allItems.push({ no: n, b_fl: r.building, dept: r.dept, brand: 'คอมจัดสเปค', spec: 'รายการนอกผังเดิม' });
+      }
+    });
+    allItems.sort((a,b) => a.no - b.no);
+
+    allItems.forEach(item => {
+      const savedRec = records.find(r => parseInt(r.item_no) === item.no);
+      const isDone = !!savedRec;
+      if (currentDirFilter === 'completed' && !isDone) return;
+      if (currentDirFilter === 'pending' && isDone) return;
+      if (q) {
+        const textToSearch = `${item.no} ${item.b_fl} ${item.dept} ${item.brand} ${savedRec ? savedRec.hostname : ''}`.toLowerCase();
+        if (!textToSearch.includes(q)) return;
+      }
+      matched++;
+
+      const card = document.createElement('div');
+      card.className = 'dir-item-card';
+      card.onclick = () => selectItemFromDirectory(item.no);
+      card.innerHTML = `
+        <div class="dir-card-top">
+          <span class="dir-item-no">#${item.no}</span>
+          <span class="scan-status-tag ${isDone ? 'tag-saved' : 'tag-pending'}">${isDone ? '✅ ลงแล้ว' : '⏳ รอลง'}</span>
+        </div>
+        <div class="dir-dept-title">${item.b_fl || item.building || '-'} • ${item.dept || '-'}</div>
+        <div class="dir-old-spec">💻 เดิม: ${item.brand || '-'} ${item.spec ? '(' + item.spec + ')' : ''}</div>
+        ${isDone ? `<div class="dir-new-info">✨ ใหม่: ${savedRec.asset_id || '-'} [${savedRec.hostname || '-'}]</div>` : ''}
+      `;
+      container.appendChild(card);
+    });
+    if (matched === 0) container.innerHTML = `<div style="text-align:center; padding:20px; font-size:0.8rem;">ไม่พบรายการ</div>`;
+  }
+
+  function selectItemFromDirectory(itemNo) {
+    document.getElementById('item_no').value = itemNo;
+    onItemNoChange();
+    closeDirectoryModal();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   async function fetchRecordsFromSheets(manual = false) {
     if (!GOOGLE_SCRIPT_URL) return;
-    
     const badgeText = document.getElementById('syncStatusText');
     const badgeDot = document.getElementById('syncDot');
-    badgeText.innerText = "กำลังซิงค์...";
-    badgeDot.style.background = "#f59e0b";
-
+    badgeText.innerText = "กำลังซิงค์..."; badgeDot.style.background = "#f59e0b";
     try {
       const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_all");
       const json = await res.json();
-      
       if (json && json.records) {
-        records = json.records.sort((a, b) => (parseInt(a.item_no) || 0) - (parseInt(b.item_no) || 0));
-        localStorage.setItem('pc_set_records_data', JSON.stringify(records));
-        renderTable();
-        badgeText.innerText = "ซิงค์สดแล้ว";
-        badgeDot.style.background = "#34d399";
-        if (manual) showToast("✅ ดึงข้อมูลล่าสุดจาก Google Sheets สำเร็จ");
+        if (json.records.length === 0 && records.length > 0) {
+          badgeText.innerText = "ซิงค์สด"; badgeDot.style.background = "#34d399";
+        } else {
+          records = json.records.sort((a, b) => (parseInt(a.item_no) || 0) - (parseInt(b.item_no) || 0));
+          localStorage.setItem('pc_set_records_data', JSON.stringify(records));
+          updateDashboard();
+          badgeText.innerText = "ซิงค์สด"; badgeDot.style.background = "#34d399";
+          if (manual) showToast("✅ ดึงข้อมูลล่าสุดจาก Google Sheets สำเร็จ");
+        }
       }
     } catch (err) {
-      console.log("Offline mode or sync notice:", err);
-      badgeText.innerText = "โหมดออฟไลน์";
-      badgeDot.style.background = "#94a3b8";
+      badgeText.innerText = "ออฟไลน์"; badgeDot.style.background = "#94a3b8";
     }
   }
 
@@ -990,60 +533,86 @@
     const pDetail = document.getElementById('previewDetail');
     const pTitle = document.getElementById('previewTitleText');
     const statusTag = document.getElementById('scanStatusTag');
+    const btnDelete = document.getElementById('btnDeleteCurrent');
 
-    if (val && val >= 1 && val <= 207) {
+    if (val && val >= 1) {
       const item = surveyMasterMap[val];
-      if (item) {
-        document.getElementById('building').value = item.b_fl || '';
-        document.getElementById('dept').value = item.dept || '';
+      const savedRec = records.find(r => parseInt(r.item_no) === val);
+      
+      if (item || savedRec) {
+        document.getElementById('building').value = savedRec?.building || item?.b_fl || '';
+        document.getElementById('dept').value = savedRec?.dept || item?.dept || '';
 
-        // เช็คว่ารายการนี้เคยบันทึกในชีตแล้วหรือไม่
-        const savedRec = records.find(r => parseInt(r.item_no) === val);
         if (savedRec) {
-          statusTag.className = "scan-status-tag tag-saved";
-          statusTag.innerText = "✅ บันทึกในชีตแล้ว";
+          statusTag.className = "scan-status-tag tag-saved"; statusTag.innerText = "✅ บันทึกแล้ว";
+          btnDelete.style.display = 'block'; // แสดงปุ่มลบเมื่อมีข้อมูลแล้ว
+          pDetail.innerHTML = `📍 ${savedRec.dept || item?.dept || '-'} (${savedRec.building || item?.b_fl || '-'})<br><span style="color:#15803d; font-weight:500;">✨ ${savedRec.asset_id || '-'} • ${savedRec.hostname || '-'}</span>`;
           
-          pTitle.innerText = `ข้อมูลสำรวจ • ลำดับที่ ${val}`;
-          pDetail.innerHTML = `
-            <strong>จุดใช้งาน:</strong> ${item.dept || '-'} (${item.b_fl || '-'})<br>
-            <strong>สเปกเดิม:</strong> ${item.brand || '-'} • ${item.spec || 'ไม่มีระบุ'}<br>
-            <span style="color:#15803d; font-weight:500;">✨ ข้อมูลชุดใหม่: ${savedRec.asset_id || '-'} • ${savedRec.hostname || '-'}</span>
-          `;
-          
-          // ดึงข้อมูลที่เคยบันทึกมาหยอดให้อัตโนมัติ (แก้ไขได้)
           document.getElementById('brand').value = savedRec.brand || '';
           document.getElementById('asset_id').value = savedRec.asset_id || 'รพ.ผศ. 7440-009-0005-2569/';
           document.getElementById('sn_monitor').value = savedRec.sn_monitor || '';
           document.getElementById('sn_minipc').value = savedRec.sn_minipc || '';
+          document.getElementById('sn_compc').value = savedRec.sn_compc || '';
           document.getElementById('sn_kbm').value = savedRec.sn_kbm || '';
           document.getElementById('sn_ups').value = savedRec.sn_ups || '';
           document.getElementById('hostname').value = savedRec.hostname || '';
           document.getElementById('ip_address').value = savedRec.ip_address || '';
           document.getElementById('mac_address').value = savedRec.mac_address || '';
           document.getElementById('remark').value = savedRec.remark || '';
+          editIndex = records.findIndex(r => r.item_no === String(val));
+          
+          document.getElementById('btnSave').innerText = "🔄 อัปเดตข้อมูล";
+          document.getElementById('btnCancelEdit').style.display = "flex";
+          document.getElementById('btnClear').style.display = "none";
         } else {
-          statusTag.className = "scan-status-tag tag-pending";
-          statusTag.innerText = "⚪ ยังไม่ได้บันทึก";
+          statusTag.className = "scan-status-tag tag-pending"; statusTag.innerText = "⚪ ยังไม่ได้ลง";
+          btnDelete.style.display = 'none'; // ซ่อนปุ่มลบเมื่อยังไม่ลงข้อมูล
+          pDetail.innerHTML = `📍 ${item?.dept || '-'} (${item?.b_fl || '-'})<br>💻 สเปกเดิม: ${item?.brand || '-'}`;
           
-          pTitle.innerText = `ข้อมูลสำรวจ • ลำดับที่ ${val}`;
-          pDetail.innerHTML = `
-            <strong>จุดใช้งาน:</strong> ${item.dept || '-'} (${item.b_fl || '-'})<br>
-            <strong>สเปกเดิม:</strong> ${item.brand || '-'} • ${item.spec || 'ไม่มีระบุ'}
-          `;
-          
-          // ล้างช่องชุดใหม่ให้ว่างพร้อมรับการสแกน
           document.getElementById('brand').value = '';
           document.getElementById('asset_id').value = 'รพ.ผศ. 7440-009-0005-2569/';
-          document.getElementById('sn_monitor').value = '';
+          document.getElementById('sn_monitor').value = ''; 
           document.getElementById('sn_minipc').value = '';
-          document.getElementById('sn_kbm').value = '';
+          document.getElementById('sn_compc').value = '';
+          document.getElementById('sn_kbm').value = ''; 
           document.getElementById('sn_ups').value = '';
-          document.getElementById('hostname').value = '';
+          document.getElementById('hostname').value = ''; 
           document.getElementById('ip_address').value = '';
-          document.getElementById('mac_address').value = '';
+          document.getElementById('mac_address').value = ''; 
           document.getElementById('remark').value = '';
+          editIndex = -1;
+          
+          document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูล";
+          document.getElementById('btnCancelEdit').style.display = "none";
+          document.getElementById('btnClear').style.display = "flex";
         }
-
+        pBox.style.display = 'block';
+        return;
+      } else {
+        // รายการใหม่ที่ไม่มีใน Master
+        statusTag.className = "scan-status-tag tag-new"; statusTag.innerText = "🌟 เพิ่มเครื่องใหม่";
+        btnDelete.style.display = 'none';
+        pTitle.innerText = `ข้อมูลสำรวจ`;
+        pDetail.innerHTML = `<span style="color:#b45309;">✨ รายการเพิ่มใหม่ (นอกผังเดิม)</span><br>ระบุ อาคาร/ชั้น และ แผนกให้ครบถ้วน`;
+        
+        document.getElementById('building').value = '';
+        document.getElementById('dept').value = '';
+        document.getElementById('brand').value = '';
+        document.getElementById('asset_id').value = 'รพ.ผศ. 7440-009-0005-2569/';
+        document.getElementById('sn_monitor').value = ''; 
+        document.getElementById('sn_minipc').value = '';
+        document.getElementById('sn_compc').value = '';
+        document.getElementById('sn_kbm').value = ''; 
+        document.getElementById('sn_ups').value = '';
+        document.getElementById('hostname').value = ''; 
+        document.getElementById('ip_address').value = '';
+        document.getElementById('mac_address').value = ''; 
+        document.getElementById('remark').value = '';
+        editIndex = -1;
+        
+        document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูลใหม่";
+        document.getElementById('btnCancelEdit').style.display = "none";
+        document.getElementById('btnClear').style.display = "flex";
         pBox.style.display = 'block';
         return;
       }
@@ -1053,116 +622,100 @@
 
   function changeItemNo(delta) {
     let cur = parseInt(document.getElementById('item_no').value) || 0;
+    
+    let maxKnown = 207;
+    records.forEach(r => {
+      let n = parseInt(r.item_no);
+      if (n > maxKnown) maxKnown = n;
+    });
+    
+    let limit = maxKnown + 1; 
+    
+    if (cur === 0 && delta < 0) cur = limit + 1;
+    
     let next = cur + delta;
-    if (next < 1) next = 1;
-    if (next > 207) next = 207;
+    if (next < 1) next = limit; // วนไปท้ายสุด
+    if (next > limit) next = 1; // วนกลับมา 1
+    
     document.getElementById('item_no').value = next;
     onItemNoChange();
   }
 
-  // Scanner & OCR
+  // ฟังก์ชันลบข้อมูลแถวที่เลือกล่าสุด
+  function deleteCurrentItem() {
+    const itemNo = document.getElementById('item_no').value.trim();
+    if (!itemNo) return;
+    
+    const idx = records.findIndex(x => x.item_no === itemNo);
+    if (idx < 0) return showToast("⚠️ ไม่พบข้อมูลที่จะลบ");
+
+    if (confirm(`คุณต้องการลบข้อมูลเครื่องลำดับที่ ${itemNo} หรือไม่?\n(ข้อมูลบน Google Sheets ต้องไปกดลบออกเองภายหลัง)`)) {
+      records.splice(idx, 1);
+      localStorage.setItem('pc_set_records_data', JSON.stringify(records));
+      updateDashboard();
+      cancelEdit();
+      showToast(`🗑️ ลบข้อมูลลำดับ ${itemNo} แล้ว`);
+      
+      // ดึงข้อมูลชีตใหม่เพื่อความชัวร์ (กรณีมีคนอื่นลบผ่านชีต)
+      fetchRecordsFromSheets();
+    }
+  }
+
   async function openScanner(fieldId, title) {
     currentTargetField = fieldId;
     document.getElementById('modalTitle').innerText = `📷 สแกน: ${title}`;
     document.getElementById('scannerModal').style.display = 'flex';
-
     try {
       if (!html5QrCode) html5QrCode = new Html5Qrcode("modalReader");
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 15, qrbox: { width: 250, height: 150 } },
-        onScanSuccess
-      );
-    } catch (err) {
-      alert("ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตสิทธิ์การเข้าถึงกล้อง");
-      closeScanner();
-    }
+      await html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 250, height: 120 } }, onScanSuccess);
+    } catch (err) { alert("กรุณาอนุญาตสิทธิ์กล้อง"); closeScanner(); }
   }
 
   async function closeScanner() {
-    if (html5QrCode && html5QrCode.isScanning) {
-      await html5QrCode.stop();
-    }
+    if (html5QrCode && html5QrCode.isScanning) await html5QrCode.stop();
     document.getElementById('scannerModal').style.display = 'none';
   }
 
   function onScanSuccess(decodedText) {
     playBeep();
     const val = cleanData(decodedText);
-
     if (val.startsWith("NET|") || currentTargetField === 'network_all') {
       const parts = val.split("|");
       if (parts.length >= 4) {
         document.getElementById('hostname').value = (parts[1] || '').toUpperCase();
         document.getElementById('ip_address').value = parts[2] || '';
         document.getElementById('mac_address').value = (parts[3] || '').toUpperCase();
-        showToast("✅ ดึงข้อมูลเน็ตเวิร์ก 1-Shot สำเร็จ");
-      } else {
-        document.getElementById('mac_address').value = val.toUpperCase();
-      }
-    } else {
-      document.getElementById(currentTargetField).value = val;
-    }
+      } else document.getElementById('mac_address').value = val.toUpperCase();
+    } else document.getElementById(currentTargetField).value = val;
     closeScanner();
   }
 
-  function triggerOCR(fieldId) {
-    currentTargetField = fieldId;
-    document.getElementById('ocrInput').click();
-  }
+  function triggerOCR(fieldId) { currentTargetField = fieldId; document.getElementById('ocrInput').click(); }
 
   async function processOCR(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    showToast("⏳ กำลังประมวลผล OCR...");
+    const file = event.target.files[0]; if (!file) return;
+    showToast("⏳ กำลังอ่านภาพ OCR...");
     try {
       const result = await Tesseract.recognize(file, 'eng+tha');
       let text = result.data.text || '';
-      
       if (currentTargetField === 'network_smart') {
-        const ipMatch = text.match(/(?:10\.|192\.168\.|172\.(?:1[6-9]|2[0-9]|3[01])\.)\d{1,3}\.\d{1,3}/);
         const macMatch = text.match(/([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})/);
-        const hostMatch = text.match(/Host\s*Name[\s.:]+([a-zA-Z0-9_-]+)/i);
-
-        if (ipMatch) document.getElementById('ip_address').value = ipMatch[0];
-        if (macMatch) document.getElementById('mac_address').value = macMatch[0].toUpperCase();
-        if (hostMatch) document.getElementById('hostname').value = hostMatch[1].toUpperCase();
-        playBeep();
-        showToast("✅ แยกข้อมูลเน็ตเวิร์กสำเร็จ");
+        if (macMatch) {
+          document.getElementById('mac_address').value = macMatch[0].toUpperCase().replace(/:/g, '-');
+          playBeep();
+          showToast("✅ อ่าน MAC สำเร็จ");
+        } else showToast("❌ ไม่พบ MAC ในภาพ");
       } else {
         let clean = cleanData(text.trim().replace(/\r?\n|\r/g, " "));
-        if (clean) {
-          document.getElementById(currentTargetField).value = clean;
-          playBeep();
-          showToast("✅ อ่านข้อความสำเร็จ");
-        }
+        if (clean) { document.getElementById(currentTargetField).value = clean; playBeep(); }
       }
-    } catch(e) {
-      showToast("❌ อ่านภาพไม่สำเร็จ");
-    } finally {
-      event.target.value = "";
-    }
+    } catch(e) { showToast("❌ อ่านภาพไม่สำเร็จ"); } finally { event.target.value = ""; }
   }
 
-  // Send directly to Google Sheets & Live Update
   function syncToGoogleSheets(data) {
     if (!GOOGLE_SCRIPT_URL) return;
-
-    fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(data)
-    })
-    .then(() => {
-      console.log("📊 บันทึกลง Google Sheets เรียบร้อย!");
-      showToast("📊 บันทึกลง Google Sheets แล้ว");
-    })
-    .catch(err => {
-      console.error("Sheets Sync Error:", err);
-      showToast("⚠️ ซิงค์ชีตขัดข้อง แต่บันทึกในเครื่องแล้ว");
-    });
+    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
+    .catch(err => console.error(err));
   }
 
   function saveData() {
@@ -1176,167 +729,62 @@
     const asset_id    = document.getElementById('asset_id').value.trim();
     const sn_monitor  = cleanData(document.getElementById('sn_monitor').value);
     const sn_minipc   = cleanData(document.getElementById('sn_minipc').value);
+    const sn_compc    = cleanData(document.getElementById('sn_compc').value);
     const sn_kbm      = cleanData(document.getElementById('sn_kbm').value);
     const sn_ups      = cleanData(document.getElementById('sn_ups').value);
     const remark      = document.getElementById('remark').value.trim();
 
-    if (!asset_id && !sn_minipc && !sn_monitor && !hostname && !ip_address) {
-      showToast("⚠️ กรุณาระบุข้อมูลก่อนกดบันทึก");
-      return;
+    if (!asset_id && !sn_minipc && !sn_compc && !hostname && !ip_address) {
+      showToast("⚠️ กรุณาระบุข้อมูลอย่างน้อย 1 ช่องก่อนบันทึก"); return;
     }
 
     const r = {
       item_no, building, dept, hostname, ip_address, mac_address,
-      asset_id, brand, sn_monitor, sn_minipc, sn_kbm, sn_ups, remark,
-      time: getThaiDateTimeString()
+      asset_id, brand, sn_monitor, sn_minipc, sn_compc, sn_kbm, sn_ups, remark, time: getThaiDateTimeString()
     };
 
-    if (editIndex >= 0) {
-      records[editIndex] = r;
-      cancelEdit();
+    if (editIndex >= 0) { 
+      records[editIndex] = r; 
+      cancelEdit(); 
     } else {
       const existingIdx = records.findIndex(x => x.item_no === item_no && item_no !== '');
-      if (existingIdx >= 0) {
-        records[existingIdx] = r;
-      } else {
-        records.push(r);
-      }
-      clearItemFields();
+      if (existingIdx >= 0) records[existingIdx] = r; else records.push(r);
+      
+      // Auto Next
+      changeItemNo(1);
     }
 
     localStorage.setItem('pc_set_records_data', JSON.stringify(records));
-    
-    // บันทึกลง Google Sheets
     syncToGoogleSheets(r);
-
-    renderTable();
-  }
-
-  function renderTable() {
-    const tbody = document.getElementById('dataTableBody');
-    tbody.innerHTML = "";
-
-    records.forEach((r, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="white-space:nowrap;">
-          <button type="button" class="btn-tbl edit" onclick="startEdit(${index})">✏️</button>
-          <button type="button" class="btn-tbl del" onclick="deleteRecord(${index})">🗑️</button>
-        </td>
-        <td style="text-align:center; font-weight:600;">${r.item_no || (index + 1)}</td>
-        <td>${r.hostname || '-'}</td>
-        <td>${r.ip_address || '-'}</td>
-        <td>${r.mac_address || '-'}</td>
-        <td><strong>${r.asset_id}</strong></td>
-        <td>${r.dept || '-'}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
     updateDashboard();
-  }
-
-  function startEdit(index) {
-    editIndex = index;
-    const r = records[index];
-
-    document.getElementById('item_no').value = r.item_no || '';
-    document.getElementById('building').value = r.building || '';
-    document.getElementById('dept').value = r.dept || '';
-    document.getElementById('hostname').value = r.hostname || '';
-    document.getElementById('ip_address').value = r.ip_address || '';
-    document.getElementById('mac_address').value = r.mac_address || '';
-    document.getElementById('brand').value = r.brand || '';
-    document.getElementById('asset_id').value = r.asset_id || '';
-    document.getElementById('sn_monitor').value = r.sn_monitor || '';
-    document.getElementById('sn_minipc').value = r.sn_minipc || '';
-    document.getElementById('sn_kbm').value = r.sn_kbm || '';
-    document.getElementById('sn_ups').value = r.sn_ups || '';
-    document.getElementById('remark').value = r.remark || '';
-
-    onItemNoChange();
-
-    document.getElementById('btnSave').innerText = "🔄 อัปเดต";
-    document.getElementById('btnCancelEdit').style.display = "flex";
-    document.getElementById('btnClear').style.display = "none";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast("💾 บันทึกลงระบบและชีตแล้ว");
   }
 
   function cancelEdit() {
-    editIndex = -1;
-    clearItemFields();
+    editIndex = -1; clearItemFields();
     document.getElementById('btnSave').innerText = "💾 บันทึกข้อมูล";
     document.getElementById('btnCancelEdit').style.display = "none";
     document.getElementById('btnClear').style.display = "flex";
   }
 
-  function deleteRecord(index) {
-    if (confirm(`ลบรายการลำดับ ${records[index].item_no || index + 1} หรือไม่?`)) {
-      records.splice(index, 1);
-      if (editIndex === index) cancelEdit();
-      localStorage.setItem('pc_set_records_data', JSON.stringify(records));
-      renderTable();
-      showToast("🗑️ ลบข้อมูลเรียบร้อย");
-    }
-  }
-
-  function clearAllData(e) {
-    e.stopPropagation();
-    if (records.length === 0) return showToast("⚠️ ไม่มีข้อมูลในตาราง");
-    if (confirm("ล้างข้อมูลในเครื่องทั้งหมดหรือไม่? (ข้อมูลใน Google Sheets จะยังคงอยู่)")) {
-      records = [];
-      localStorage.removeItem('pc_set_records_data');
-      cancelEdit();
-      renderTable();
-      showToast("ล้างตารางในเครื่องแล้ว");
-    }
-  }
-
   function clearItemFields() {
-    let nextNo = parseInt(document.getElementById('item_no').value) || 0;
-    if (nextNo > 0 && nextNo < 207) {
-      document.getElementById('item_no').value = nextNo + 1;
-      onItemNoChange();
-    } else {
-      document.getElementById('item_no').value = '';
-      document.getElementById('previewBox').style.display = 'none';
-    }
-    
-    document.getElementById('hostname').value = '';
-    document.getElementById('ip_address').value = '';
-    document.getElementById('mac_address').value = '';
+    document.getElementById('item_no').value = '';
+    document.getElementById('previewBox').style.display = 'none';
+    ['hostname','ip_address','mac_address','sn_monitor','sn_minipc','sn_compc','sn_kbm','sn_ups','remark'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('asset_id').value = 'รพ.ผศ. 7440-009-0005-2569/';
-    document.getElementById('sn_monitor').value = '';
-    document.getElementById('sn_minipc').value = '';
-    document.getElementById('sn_kbm').value = '';
-    document.getElementById('sn_ups').value = '';
-    document.getElementById('remark').value = '';
   }
 
   function exportToCSV() {
     if (records.length === 0) return showToast("⚠️ ยังไม่มีข้อมูล");
-
-    let csv = "\uFEFFลำดับเดิม,ชื่อเครื่อง,IP Address,MAC Address,เวลาบันทึก,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N จอภาพ,S/N Mini PC,S/N เมาส์และคีย์บอร์ด,S/N UPS,หมายเหตุ\n";
-    records.forEach((r, idx) => {
-      csv += `"${r.item_no || (idx + 1)}","${r.hostname || ''}","${r.ip_address || ''}","${r.mac_address || ''}","${r.time || ''}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.sn_monitor}","${r.sn_minipc}","${r.sn_kbm}","${r.sn_ups}","${r.remark}"\n`;
-    });
-
+    let csv = "\uFEFFลำดับเดิม,ชื่อเครื่อง,IP Address,MAC Address,เวลาบันทึก,เลขครุภัณฑ์,อาคาร / ชั้น,แผนก / จุดใช้งาน,ยี่ห้อ,S/N จอภาพ,S/N Mini PC,S/N COM PC,S/N เมาส์และคีย์บอร์ด,S/N UPS,หมายเหตุ\n";
+    records.forEach((r, idx) => { csv += `"${r.item_no || (idx + 1)}","${r.hostname || ''}","${r.ip_address || ''}","${r.mac_address || ''}","${r.time || ''}","${r.asset_id}","${r.building}","${r.dept}","${r.brand}","${r.sn_monitor}","${r.sn_minipc}","${r.sn_compc || ''}","${r.sn_kbm}","${r.sn_ups}","${r.remark}"\n`; });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `สำรวจคอมพิวเตอร์_รพ_ผศ_${getThaiDateTimeString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `สำรวจคอมพิวเตอร์_${getThaiDateTimeString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }
 
-  // Startup
   window.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('pc_set_records_data');
-    if (saved) {
-      try { records = JSON.parse(saved); renderTable(); } catch(e) {}
-    }
+    if (saved) try { records = JSON.parse(saved); } catch(e) {}
     updateDashboard();
     fetchRecordsFromSheets();
   });
