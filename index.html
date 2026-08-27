@@ -453,7 +453,7 @@
     renderDirectoryList();
   }
 
-  function renderDirectoryList() {
+ function renderDirectoryList() {
     const container = document.getElementById('dirListContainer');
     const q = (document.getElementById('dirSearchInput').value || '').trim().toLowerCase();
     container.innerHTML = '';
@@ -473,9 +473,34 @@
       const isDone = !!savedRec;
       if (currentDirFilter === 'completed' && !isDone) return;
       if (currentDirFilter === 'pending' && isDone) return;
+
       if (q) {
-        const textToSearch = `${item.no} ${item.b_fl} ${item.dept} ${item.brand} ${savedRec ? savedRec.hostname : ''}`.toLowerCase();
-        if (!textToSearch.includes(q)) return;
+        const itemNoStr = String(item.no);
+        const bFlStr = (item.b_fl || item.building || '').toLowerCase();
+        const deptStr = (item.dept || '').toLowerCase();
+        const brandStr = (item.brand || '').toLowerCase();
+        const specStr = (item.spec || '').toLowerCase();
+        const hostStr = (savedRec ? savedRec.hostname : '').toLowerCase();
+        const assetStr = (savedRec ? savedRec.asset_id : '').toLowerCase();
+
+        // 1. เช็กกรณีค้นหา อาคาร/ชั้น
+        let matchBuilding = false;
+        if (q.includes('/')) {
+          // ถ้าพิมพ์ "9/" จะค้นหาทุกชั้นในอาคาร 9 แต่ถ้าพิมพ์ "9/1" จะตรงเฉพาะ "9/1" เท่านั้น
+          matchBuilding = q.endsWith('/') ? bFlStr.startsWith(q) : bFlStr === q;
+        }
+
+        // 2. เช็กลำดับ (เช่น "1", "#1")
+        const matchNo = itemNoStr === q || `#${itemNoStr}` === q;
+
+        // 3. เช็กข้อความทั่วไป (แผนก, ยี่ห้อ, สเปก, Hostname, ครุภัณฑ์)
+        const matchText = deptStr.includes(q) || 
+                          brandStr.includes(q) || 
+                          specStr.includes(q) || 
+                          hostStr.includes(q) || 
+                          assetStr.includes(q);
+
+        if (!matchBuilding && !matchNo && !matchText) return;
       }
       matched++;
 
@@ -493,9 +518,8 @@
       `;
       container.appendChild(card);
     });
-    if (matched === 0) container.innerHTML = `<div style="text-align:center; padding:20px; font-size:0.8rem;">ไม่พบรายการ</div>`;
+    if (matched === 0) container.innerHTML = `<div style="text-align:center; padding:20px; font-size:0.8rem; color:var(--slate-500);">ไม่พบรายการ</div>`;
   }
-
   function selectItemFromDirectory(itemNo) {
     document.getElementById('item_no').value = itemNo;
     onItemNoChange();
