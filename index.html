@@ -116,10 +116,10 @@
     .btn-dock { flex: 1; height: 42px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
     .btn-dock:active { transform: scale(0.97); }
     .btn-dock-clear { background: var(--slate-100); color: var(--slate-600); flex: 0.35; }
-    .btn-dock-save { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; flex: 0.65; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);}
+    .btn-dock-save { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; flex: 0.65; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
     
     /* Modals & Toasts */
-    #toast { position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: #ffffff; padding: 8px 16px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; z-index: 9999; opacity: 0; transition: all 0.25s; box-shadow: 0 8px 20px rgba(0,0,0,0.25); pointer-events: none; }
+    #toast { position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: #ffffff; padding: 8px 16px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; z-index: 99999; opacity: 0; transition: all 0.25s; box-shadow: 0 8px 20px rgba(0,0,0,0.25); pointer-events: none; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     
     /* Directory Modal */
@@ -141,10 +141,11 @@
     .dir-old-spec { font-size: 0.7rem; color: var(--slate-500); }
     .dir-new-info { font-size: 0.65rem; color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-top: 3px; display: inline-block; }
     
-    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
-    .modal-sheet { background: #ffffff; border-radius: 16px; width: 100%; max-width: 380px; padding: 12px; text-align: center; }
-    #modalReader { width: 100%; min-height: 200px; border-radius: 10px; overflow: hidden; background: #000; margin: 8px 0; }
-    .btn-close-scanner { width: 100%; padding: 10px; border: none; border-radius: 8px; background: #ef4444; color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    /* Scanner Modal (ขยายหน้าต่างให้กว้างและชัดเจนขึ้น) */
+    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999999; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
+    .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 480px; padding: 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    #modalReader { width: 100%; min-height: 280px; border-radius: 12px; overflow: hidden; background: #000; margin: 10px 0; }
+    .btn-close-scanner { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #ef4444; color: white; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -488,12 +489,22 @@
       if (currentDirFilter === 'new' && !isNewOutside) return;
 
       if (q) {
-        const textToSearch = ` ${item.no} ${item.b_fl || item.building || ''} ${item.dept || ''} ${item.brand || ''} ${savedRec ? savedRec.hostname : ''} `.toLowerCase();
-        let isMatch = textToSearch.includes(q);
-        if (q.match(/^\d+$/) || q.match(/^\d+\/\d+$/)) {
-            isMatch = textToSearch.includes(` ${q} `);
+        const itemNoStr = String(item.no);
+        const bFlStr = (item.b_fl || item.building || '').toLowerCase();
+        const deptStr = (item.dept || '').toLowerCase();
+        const brandStr = (item.brand || '').toLowerCase();
+        const specStr = (item.spec || '').toLowerCase();
+        const hostStr = (savedRec ? savedRec.hostname : '').toLowerCase();
+        const assetStr = (savedRec ? savedRec.asset_id : '').toLowerCase();
+
+        let matchBuilding = false;
+        if (q.includes('/')) {
+          matchBuilding = q.endsWith('/') ? bFlStr.startsWith(q) : bFlStr === q;
         }
-        if (!isMatch) return;
+        const matchNo = itemNoStr === q || `#${itemNoStr}` === q;
+        const matchText = deptStr.includes(q) || brandStr.includes(q) || specStr.includes(q) || hostStr.includes(q) || assetStr.includes(q);
+
+        if (!matchBuilding && !matchNo && !matchText) return;
       }
       matched++;
 
@@ -511,7 +522,7 @@
       `;
       container.appendChild(card);
     });
-    if (matched === 0) container.innerHTML = `<div style="text-align:center; padding:20px; font-size:0.8rem;">ไม่พบรายการ</div>`;
+    if (matched === 0) container.innerHTML = `<div style="text-align:center; padding:20px; font-size:0.8rem; color:var(--slate-500);">ไม่พบรายการ</div>`;
   }
 
   function selectItemFromDirectory(itemNo) {
@@ -646,30 +657,52 @@
       if (n > maxKnown) maxKnown = n;
     });
     
-    if (cur === 0 && delta < 0) cur = maxKnown + 1;
+    let limit = maxKnown + 1; 
+    
+    if (cur === 0 && delta < 0) cur = limit + 1;
     
     let next = cur + delta;
-    if (next < 1) next = maxKnown;
-    if (next > maxKnown) next = 1;
+    if (next < 1) next = limit;
+    if (next > limit) next = 1;
     
     document.getElementById('item_no').value = next;
     onItemNoChange();
   }
 
-  function deleteCurrentItem() {
+  // ลบข้อมูลออกทั้งในแอปและล้างข้อมูลใน Google Sheets อัตโนมัติ
+  async function deleteCurrentItem() {
     const itemNo = document.getElementById('item_no').value.trim();
     if (!itemNo) return;
     
     const idx = records.findIndex(x => x.item_no === itemNo);
     if (idx < 0) return showToast("⚠️ ไม่พบข้อมูลที่จะลบ");
 
-    if (confirm(`คุณต้องการลบข้อมูลเครื่องลำดับที่ ${itemNo} หรือไม่?\n(ข้อมูลนี้จะถูกลบออกจากมือถือ แต่ในชีต Google Sheets คุณต้องไปกดลบแถวออกเอง)`)) {
+    if (confirm(`คุณต้องการลบข้อมูลเครื่องลำดับที่ ${itemNo} หรือไม่?\n(ระบบจะลบข้อมูลออกจากมือถือ และล้างข้อมูลใน Google Sheets ให้อัตโนมัติ)`)) {
+      showToast("⏳ กำลังลบข้อมูลใน Google Sheets...");
+      
+      // ส่งคำสั่งลบไปยัง Google Sheets
+      if (GOOGLE_SCRIPT_URL) {
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "delete", item_no: itemNo })
+          });
+        } catch (err) {
+          console.error("Delete sync error:", err);
+        }
+      }
+
+      // ลบจากความจำในเครื่อง
       records.splice(idx, 1);
       localStorage.setItem('pc_set_records_data', JSON.stringify(records));
       updateDashboard();
       cancelEdit();
-      showToast(`🗑️ ลบข้อมูลลำดับ ${itemNo} แล้ว`);
-      fetchRecordsFromSheets();
+      showToast(`🗑️ ลบข้อมูลลำดับ ${itemNo} ทั้งในแอปและชีตสำเร็จ`);
+      
+      // ซิงค์ดึงข้อมูลใหม่หลังลบ 1 วินาที
+      setTimeout(() => fetchRecordsFromSheets(), 1000);
     }
   }
 
@@ -679,7 +712,17 @@
     document.getElementById('scannerModal').style.display = 'flex';
     try {
       if (!html5QrCode) html5QrCode = new Html5Qrcode("modalReader");
-      await html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 250, height: 120 } }, onScanSuccess);
+      
+      const config = {
+        fps: 20,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+          const width = Math.floor(viewfinderWidth * 0.88);
+          const height = Math.floor(Math.min(viewfinderHeight * 0.70, 220));
+          return { width: Math.max(width, 280), height: Math.max(height, 160) };
+        }
+      };
+      
+      await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
     } catch (err) { alert("กรุณาอนุญาตสิทธิ์กล้อง"); closeScanner(); }
   }
 
