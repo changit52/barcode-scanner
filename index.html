@@ -48,11 +48,12 @@
     .sync-status-badge { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 3px 8px; font-size: 0.65rem; font-weight: 500; display: flex; align-items: center; gap: 4px; cursor: pointer; }
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; box-shadow: 0 0 6px #34d399; }
     
-    /* 4-Column Stats Dashboard */
+    /* Stats Dashboard */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 6px; }
     .stat-pill { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; padding: 5px 2px; text-align: center; cursor: pointer; }
     .stat-pill.success { background: rgba(16, 185, 129, 0.25); border-color: rgba(52, 211, 153, 0.45); }
     .stat-pill.amber { background: rgba(245, 158, 11, 0.25); border-color: rgba(251, 191, 36, 0.5); }
+    .stat-pill.new-stat { background: rgba(245, 158, 11, 0.25); border-color: rgba(251, 191, 36, 0.5); }
     .stat-num { font-size: 1.15rem; font-weight: 700; line-height: 1; }
     .stat-num.text-yellow { color: #fef08a; }
     .stat-lbl { font-size: 0.58rem; opacity: 0.85; margin-top: 2px; white-space: nowrap; }
@@ -162,7 +163,7 @@
     .dir-old-spec { font-size: 0.7rem; color: var(--slate-500); }
     .dir-new-info { font-size: 0.65rem; color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-top: 3px; display: inline-block; }
     
-    /* Scanner Modal ระดับมืออาชีพ (สแกนไว คมชัด มีไฟฉาย & ซูม) */
+    /* Scanner Modal */
     #scannerModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); z-index: 999999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px; padding-top: 20px; backdrop-filter: blur(4px); }
     .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 520px; padding: 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
     #modalReader { width: 100%; min-height: 300px; max-height: 52vh; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
@@ -182,7 +183,7 @@
 
 <div class="app-container">
 
-  <!-- แท็บสลับหน้าจอ (โหมดคอมพิวเตอร์ / โหมดเครื่องพิมพ์) -->
+  <!-- โหมดสลับฟอร์ม -->
   <div class="mode-nav">
     <button type="button" class="mode-tab active-pc" id="tabModePC" onclick="switchAppMode('pc')">
       💻 สำรวจคอมพิวเตอร์
@@ -192,7 +193,7 @@
     </button>
   </div>
   
-  <!-- Header Card (แสดงสถิติตามโหมด) -->
+  <!-- สถิติ Dashboard -->
   <div class="header-card" id="headerCard">
     <div class="app-header-top">
       <div>
@@ -203,7 +204,6 @@
       </div>
     </div>
     
-    <!-- Dashboard Stats (PC View) -->
     <div class="stats-grid" id="statsGridPC">
       <div class="stat-pill" onclick="openDirectoryModal('all')">
         <div class="stat-num" id="dash-pc-target">207</div><div class="stat-lbl">เป้าหมาย (ผัง)</div>
@@ -219,7 +219,6 @@
       </div>
     </div>
 
-    <!-- Dashboard Stats (Printer View) -->
     <div class="stats-grid" id="statsGridPrinter" style="display: none;">
       <div class="stat-pill success" onclick="openDirectoryModal('printer_all')">
         <div class="stat-num" id="dash-print-total">0</div><div class="stat-lbl">บันทึกแล้ว 🖨️</div>
@@ -238,9 +237,7 @@
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
   </div>
 
-  <!-- ======================================================= -->
-  <!-- 🖥️ 1. แบบฟอร์มสำรวจคอมพิวเตอร์ (PC Mode View) -->
-  <!-- ======================================================= -->
+  <!-- 🖥️ ฟอร์มสำรวจคอมพิวเตอร์ -->
   <div id="viewPCSection" style="display: flex; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir" onclick="openDirectoryModal('all')">
@@ -280,7 +277,6 @@
       </div>
     </div>
 
-    <!-- หมวดชุดคอมพิวเตอร์ -->
     <div class="card section-itset">
       <div class="card-header" style="margin-bottom:6px;">
         <div class="card-title">✨ ข้อมูลคอมจัดสเปคใหม่</div>
@@ -402,9 +398,7 @@
     </div>
   </div>
 
-  <!-- ======================================================= -->
-  <!-- 🖨️ 2. แบบฟอร์มสำรวจเครื่องพิมพ์ (Printer Mode View) -->
-  <!-- ======================================================= -->
+  <!-- 🖨️ ฟอร์มสำรวจเครื่องพิมพ์ -->
   <div id="viewPrinterSection" style="display: none; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir printer-theme" onclick="openDirectoryModal('printer_all')">
@@ -448,7 +442,6 @@
       </div>
     </div>
 
-    <!-- ข้อมูลเครื่องพิมพ์ -->
     <div class="card section-printer">
       <div class="card-header" style="margin-bottom:6px;">
         <div class="card-title" style="color: #9a3412;">🖨️ ข้อมูลเครื่องพิมพ์ (Printer)</div>
@@ -488,7 +481,6 @@
       </div>
     </div>
 
-    <!-- หมวดการเชื่อมต่อเน็ตเวิร์กเครื่องพิมพ์ -->
     <div class="card section-network">
       <div class="card-header" style="margin-bottom:6px;">
         <div class="card-title">🌐 การเชื่อมต่อ & คอมพิวเตอร์ที่ต่อพ่วง</div>
@@ -536,7 +528,7 @@
   </div>
 </div>
 
-<!-- Dock Bar ล่างจอ -->
+<!-- Dock เมนูด้านล่าง -->
 <div class="dock-bar">
   <div class="dock-container">
     <button class="btn-dock btn-dock-clear" type="button" id="btnClear" onclick="clearItemFields()">ล้างฟอร์ม</button>
@@ -555,7 +547,6 @@
       </div>
       <input type="text" id="dirSearchInput" class="dir-search-box" placeholder="🔍 ค้นหาแผนก, ชั้น, อาคาร หรือเลขลำดับ..." oninput="renderDirectoryList()">
       
-      <!-- Filter Tabs สำหรับโหมดคอมพิวเตอร์ -->
       <div class="dir-filter-tabs" id="filterTabsPC">
         <button type="button" class="dir-tab active" id="tab-all" onclick="setDirFilter('all')">ทั้งหมด</button>
         <button type="button" class="dir-tab" id="tab-pending" onclick="setDirFilter('pending')">⏳ รอลง (<span id="filterPendingCount">0</span>)</button>
@@ -563,7 +554,6 @@
         <button type="button" class="dir-tab" id="tab-new" onclick="setDirFilter('new')">✦ นอกผัง (<span id="filterNewCount">0</span>)</button>
       </div>
 
-      <!-- Filter Tabs สำหรับโหมดเครื่องพิมพ์ -->
       <div class="dir-filter-tabs" id="filterTabsPrinter" style="display: none;">
         <button type="button" class="dir-tab active" id="tab-printer_all" onclick="setDirFilter('printer_all')">ทั้งหมด (<span id="filterPrintAllCount">0</span>)</button>
         <button type="button" class="dir-tab" id="tab-printer_lan" onclick="setDirFilter('printer_lan')">🌐 LAN</button>
@@ -577,6 +567,8 @@
 
 <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none" onchange="processOCR(event)">
 <div id="toast">แจ้งเตือน</div>
+
+<!-- Scanner Modal -->
 <div id="scannerModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -584,14 +576,12 @@
       <button type="button" onclick="closeScanner()" style="background:var(--slate-100); border:none; width:28px; height:28px; border-radius:50%; font-weight:700; cursor:pointer;">✕</button>
     </div>
     
-    <!-- แถบเครื่องมือช่วยสแกน (เปิดไฟฉาย / ซูม / สลับทรงกรอบ) -->
     <div class="scanner-tools-bar">
       <button type="button" class="btn-scan-tool" id="btnTorch" onclick="toggleTorch()">💡 เปิดไฟ</button>
       <button type="button" class="btn-scan-tool" id="btnZoom" onclick="cycleZoom()">🔍 ซูม 1x</button>
       <button type="button" class="btn-scan-tool" id="btnScanMode" onclick="toggleScanBox()">📐 แนวนอน (1D)</button>
     </div>
 
-    <!-- ช่องกล้องพร้อมเลเซอร์นำทางสีแดง -->
     <div style="position:relative; width:100%; border-radius:12px; overflow:hidden;">
       <div id="modalReader"></div>
       <div class="scanner-laser" id="scannerLaser"></div>
@@ -612,14 +602,20 @@
   let surveyMasterMap = {};
   masterSurveyList.forEach(item => { surveyMasterMap[item.no] = item; });
 
-  let currentAppMode = 'pc'; // 'pc' หรือ 'printer'
-  let records = [];          // ข้อมูลคอมพิวเตอร์
-  let printerRecords = [];   // ข้อมูลเครื่องพิมพ์
+  let currentAppMode = 'pc';
+  let records = [];
+  let printerRecords = [];
   let editIndex = -1;
   let printerEditIndex = -1;
   let currentTargetField = '';
   let html5QrCode = null;
   let currentDirFilter = 'all';
+
+  // ตัวแปรกล้อง & สแกนเนอร์
+  let isTorchOn = false;
+  let currentVideoTrack = null;
+  let currentZoom = 1;
+  let currentBoxMode = 'wide';
 
   function showToast(msg) {
     const t = document.getElementById("toast");
@@ -633,9 +629,6 @@
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
-  // -------------------------------------------------------------
-  // 🔄 สลับโหมด คอมพิวเตอร์ <-> เครื่องพิมพ์
-  // -------------------------------------------------------------
   function switchAppMode(mode) {
     currentAppMode = mode;
     const tabPC = document.getElementById('tabModePC');
@@ -679,9 +672,11 @@
       btnSave.innerText = printerEditIndex >= 0 ? "🔄 อัปเดตข้อมูลปริ๊นเตอร์" : "💾 บันทึกข้อมูลปริ๊นเตอร์";
       setDirFilter('printer_all');
 
-      // ถ้าช่องลำดับปริ๊นเตอร์ยังว่าง ให้กำหนดค่าเริ่มต้นอัตโนมัติ
       if (!document.getElementById('printer_no').value) {
-        document.getElementById('printer_no').value = printerRecords.length + 1;
+        const nextNo = printerRecords.length > 0 
+          ? Math.max(...printerRecords.map(r => parseInt(r.item_no) || 0)) + 1 
+          : 1;
+        document.getElementById('printer_no').value = nextNo;
         onPrinterNoChange();
       }
     }
@@ -735,7 +730,6 @@
   }
 
   function updateDashboard() {
-    // PC Stats
     const inMasterDone = records.filter(r => parseInt(r.item_no) <= 207).length;
     const newItemsCount = records.filter(r => parseInt(r.item_no) > 207).length;
     const totalTarget = 207;
@@ -751,7 +745,6 @@
     document.getElementById('filterPendingCount').innerText = remain;
     document.getElementById('filterNewCount').innerText = newItemsCount;
 
-    // Printer Stats
     const pTotal = printerRecords.length;
     const pLan = printerRecords.filter(r => (r.connection_type || '').toUpperCase() === 'LAN').length;
     const pUsb = printerRecords.filter(r => (r.connection_type || '').toUpperCase() === 'USB').length;
@@ -784,7 +777,6 @@
       const targetTab = document.getElementById(`tab-${filter}`);
       if (targetTab) targetTab.classList.add('active');
     }
-    
     renderDirectoryList();
   }
 
@@ -806,7 +798,6 @@
     renderDirectoryList();
   }
 
-  // ค้นหารายการอัจฉริยะ (แยกตามโหมดคอมพิวเตอร์ และ เครื่องพิมพ์)
   function renderDirectoryList() {
     const container = document.getElementById('dirListContainer');
     const q = (document.getElementById('dirSearchInput')?.value || '').trim().toLowerCase();
@@ -874,8 +865,7 @@
         container.appendChild(card);
       });
     } else {
-      // โหมดเครื่องพิมพ์ (Printer Directory)
-      printerRecords.forEach((item, idx) => {
+      printerRecords.forEach((item) => {
         const connType = (item.connection_type || 'LAN').toUpperCase();
         if (currentDirFilter === 'printer_lan' && connType !== 'LAN') return;
         if (currentDirFilter === 'printer_usb' && connType !== 'USB') return;
@@ -946,9 +936,6 @@
     }
   }
 
-  // -------------------------------------------------------------
-  // 💻 จัดการฟอร์มคอมพิวเตอร์
-  // -------------------------------------------------------------
   function onItemNoChange() {
     const val = parseInt(document.getElementById('item_no').value || '0');
     const pBox = document.getElementById('previewBox');
@@ -985,7 +972,7 @@
           document.getElementById('ip_address').value = savedRec.ip_address || '';
           document.getElementById('mac_address').value = savedRec.mac_address || '';
           document.getElementById('remark').value = savedRec.remark || '';
-          editIndex = records.findIndex(r => r.item_no === String(val));
+          editIndex = records.findIndex(r => String(r.item_no) === String(val));
           
           document.getElementById('btnSave').innerText = "🔄 อัปเดตข้อมูลคอม";
           document.getElementById('btnCancelEdit').style.display = "flex";
@@ -1064,9 +1051,6 @@
     onItemNoChange();
   }
 
-  // -------------------------------------------------------------
-  // 🖨️ จัดการฟอร์มเครื่องพิมพ์
-  // -------------------------------------------------------------
   function onPrinterNoChange() {
     const val = parseInt(document.getElementById('printer_no').value || '0');
     const pBox = document.getElementById('previewPrinterBox');
@@ -1136,20 +1120,17 @@
     onPrinterNoChange();
   }
 
-  // -------------------------------------------------------------
-  // 🗑️ ฟังก์ชันลบข้อมูล (Delete)
-  // -------------------------------------------------------------
   async function deleteCurrentItem() {
     const itemNo = document.getElementById('item_no').value.trim();
     if (!itemNo) return;
-    const idx = records.findIndex(x => x.item_no === itemNo);
+    const idx = records.findIndex(x => String(x.item_no) === String(itemNo));
     if (idx < 0) return showToast("⚠️ ไม่พบข้อมูลที่จะลบ");
 
-    if (confirm(`คุณต้องการลบข้อมูลเครื่องคอมพิวเตอร์ลำดับที่ ${itemNo} หรือไม่?\n(ระบบจะลบออกจากแอปและล้างข้อมูลในชีตให้อัตโนมัติ)`)) {
-      showToast("⏳ กำลังลบข้อมูลใน Google Sheets...");
+    if (confirm(`คุณต้องการลบข้อมูลเครื่องคอมพิวเตอร์ลำดับที่ ${itemNo} หรือไม่?`)) {
+      showToast("⏳ กำลังลบข้อมูล...");
       if (GOOGLE_SCRIPT_URL) {
         try {
-          await fetch(GOOGLE_SCRIPT_URL, {
+          fetch(GOOGLE_SCRIPT_URL, {
             method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "delete", item_no: itemNo, type: "pc" })
           });
@@ -1170,11 +1151,11 @@
     const idx = printerRecords.findIndex(x => String(x.item_no) === String(itemNo));
     if (idx < 0) return showToast("⚠️ ไม่พบข้อมูลที่จะลบ");
 
-    if (confirm(`คุณต้องการลบข้อมูลเครื่องพิมพ์ลำดับที่ ${itemNo} หรือไม่?\n(ระบบจะลบออกจากชีตสำรวจเครื่องพิมพ์อัตโนมัติ)`)) {
-      showToast("⏳ กำลังลบข้อมูลใน Google Sheets...");
+    if (confirm(`คุณต้องการลบข้อมูลเครื่องพิมพ์ลำดับที่ ${itemNo} หรือไม่?`)) {
+      showToast("⏳ กำลังลบข้อมูล...");
       if (GOOGLE_SCRIPT_URL) {
         try {
-          await fetch(GOOGLE_SCRIPT_URL, {
+          fetch(GOOGLE_SCRIPT_URL, {
             method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "delete", item_no: itemNo, type: "printer" })
           });
@@ -1189,9 +1170,6 @@
     }
   }
 
-  // -------------------------------------------------------------
-  // 📷 สแกนเนอร์ & OCR
-  // -------------------------------------------------------------
   async function openScanner(fieldId, title) {
     currentTargetField = fieldId;
     document.getElementById('modalTitle').innerText = `📷 สแกน: ${title}`;
@@ -1200,13 +1178,12 @@
       if (!html5QrCode) {
         html5QrCode = new Html5Qrcode("modalReader", {
           experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true // ใช้ Hardware เร่งความเร็วสแกนแบบ Native (ไวขึ้น 5-10 เท่า)
+            useBarCodeDetectorIfSupported: true
           },
           verbose: false
         });
       }
       
-      // ปรับความละเอียดกล้องเป็น HD (1280x720) เพื่อให้เส้นบาร์โค้ดละเอียด คมชัด ไม่แตก
       const cameraConfig = {
         facingMode: "environment",
         width: { min: 640, ideal: 1280, max: 1920 },
@@ -1221,7 +1198,7 @@
       await html5QrCode.start(cameraConfig, scanConfig, onScanSuccess);
       setTimeout(setupCameraTrack, 400);
     } catch (err) {
-      console.warn("High-res failed, fallback to basic:", err);
+      console.warn("High-res failed, fallback:", err);
       try {
         await html5QrCode.start({ facingMode: "environment" }, { fps: 20 }, onScanSuccess);
         setTimeout(setupCameraTrack, 400);
@@ -1240,7 +1217,6 @@
       } else if (currentBoxMode === 'full') {
         return { width: Math.floor(viewfinderWidth * 0.96), height: Math.floor(viewfinderHeight * 0.88) };
       } else {
-        // 'wide' สำหรับบาร์โค้ดยาวเลขครุภัณฑ์และ Serial Number
         const width = Math.floor(viewfinderWidth * 0.94);
         const height = Math.floor(Math.min(viewfinderHeight * 0.65, 200));
         return { width: Math.max(width, 280), height: Math.max(height, 140) };
@@ -1276,7 +1252,6 @@
         if (isTorchOn) torchBtn.classList.add('active'); else torchBtn.classList.remove('active');
       }
     } catch(e) {
-      console.error(e);
       showToast("⚠️ ไม่สามารถเปิดไฟฉายได้");
     }
   }
@@ -1333,8 +1308,18 @@
       try {
         await currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] });
       } catch(e) {}
+      isTorchOn = false;
+      const torchBtn = document.getElementById('btnTorch');
+      if (torchBtn) {
+        torchBtn.innerText = "💡 เปิดไฟ";
+        torchBtn.classList.remove('active');
+      }
     }
-    if (html5QrCode && html5QrCode.isScanning) await html5QrCode.stop();
+    if (html5QrCode && html5QrCode.isScanning) {
+      try {
+        await html5QrCode.stop();
+      } catch(e) { console.warn(e); }
+    }
     document.getElementById('scannerModal').style.display = 'none';
   }
 
@@ -1380,21 +1365,25 @@
           playBeep(); 
         }
       }
-    } catch(e) { showToast("❌ อ่านภาพไม่สำเร็จ"); } finally { event.target.value = ""; }
+    } catch(e) { 
+      showToast("❌ อ่านภาพไม่สำเร็จ"); 
+    } finally { 
+      event.target.value = ""; 
+    }
   }
 
   function syncToGoogleSheets(data) {
     if (!GOOGLE_SCRIPT_URL) return;
-    fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
-    .catch(err => console.error(err));
+    fetch(GOOGLE_SCRIPT_URL, { 
+      method: "POST", 
+      mode: "no-cors", 
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+      body: JSON.stringify(data) 
+    }).catch(err => console.error(err));
   }
 
-  // -------------------------------------------------------------
-  // 💾 บันทึกข้อมูล (Save)
-  // -------------------------------------------------------------
   function saveData() {
     if (currentAppMode === 'pc') {
-      // บันทึกลงชีตสำรวจคอมพิวเตอร์
       const item_no     = document.getElementById('item_no').value.trim();
       const building    = document.getElementById('building').value.trim();
       const floor       = document.getElementById('floor').value.trim();
@@ -1431,9 +1420,11 @@
         remark, time: getThaiDateTimeString()
       };
 
-      if (editIndex >= 0) { records[editIndex] = r; cancelEdit(); } 
-      else {
-        const existingIdx = records.findIndex(x => x.item_no === item_no && item_no !== '');
+      if (editIndex >= 0) { 
+        records[editIndex] = r; 
+        cancelEdit(); 
+      } else {
+        const existingIdx = records.findIndex(x => String(x.item_no) === String(item_no) && item_no !== '');
         if (existingIdx >= 0) records[existingIdx] = r; else records.push(r);
         changeItemNo(1);
       }
@@ -1444,7 +1435,6 @@
       showToast("💾 บันทึกข้อมูลคอมลงชีตแล้ว");
 
     } else {
-      // บันทึกลงชีตสำรวจเครื่องพิมพ์
       const item_no          = document.getElementById('printer_no').value.trim();
       const building         = document.getElementById('p_bldg').value.trim();
       const floor            = document.getElementById('p_flr').value.trim();
@@ -1471,8 +1461,10 @@
         remark, time: getThaiDateTimeString()
       };
 
-      if (printerEditIndex >= 0) { printerRecords[printerEditIndex] = r; cancelEdit(); } 
-      else {
+      if (printerEditIndex >= 0) { 
+        printerRecords[printerEditIndex] = r; 
+        cancelEdit(); 
+      } else {
         const existingIdx = printerRecords.findIndex(x => String(x.item_no) === String(item_no) && item_no !== '');
         if (existingIdx >= 0) printerRecords[existingIdx] = r; else printerRecords.push(r);
         changePrinterNo(1);
