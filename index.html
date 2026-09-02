@@ -48,7 +48,7 @@
     .sync-status-badge { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 3px 8px; font-size: 0.65rem; font-weight: 500; display: flex; align-items: center; gap: 4px; cursor: pointer; }
     .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; box-shadow: 0 0 6px #34d399; }
     
-    /* Stats Dashboard */
+    /* 4-Column Stats Dashboard */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 6px; }
     .stat-pill { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; padding: 5px 2px; text-align: center; cursor: pointer; }
     .stat-pill.success { background: rgba(16, 185, 129, 0.25); border-color: rgba(52, 211, 153, 0.45); }
@@ -163,18 +163,15 @@
     .dir-old-spec { font-size: 0.7rem; color: var(--slate-500); }
     .dir-new-info { font-size: 0.65rem; color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-top: 3px; display: inline-block; }
     
-    /* Scanner Modal */
-    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); z-index: 999999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px; padding-top: 20px; backdrop-filter: blur(4px); }
-    .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 520px; padding: 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
-    #modalReader { width: 100%; min-height: 300px; max-height: 52vh; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
-    #modalReader video { object-fit: cover !important; width: 100% !important; }
+    /* Scanner Modal (Clean, Universal & Stable) */
+    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 999999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px; padding-top: 24px; backdrop-filter: blur(4px); }
+    .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 500px; padding: 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
+    #modalReader { width: 100%; min-height: 280px; max-height: 55vh; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
+    #modalReader video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 10px; }
     
-    .scanner-tools-bar { display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; }
-    .btn-scan-tool { background: var(--slate-100); border: 1px solid var(--slate-300); color: var(--slate-700); border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+    .scanner-tools-bar { display: flex; gap: 6px; justify-content: center; align-items: center; }
+    .btn-scan-tool { background: var(--slate-100); border: 1px solid var(--slate-300); color: var(--slate-700); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
     .btn-scan-tool:active, .btn-scan-tool.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
-    
-    .scanner-laser { position: absolute; top: 20%; left: 5%; width: 90%; height: 2px; background: linear-gradient(90deg, rgba(239,68,68,0) 0%, rgba(239,68,68,1) 50%, rgba(239,68,68,0) 100%); box-shadow: 0 0 10px #ef4444; animation: scanLaser 2.2s infinite ease-in-out; pointer-events: none; z-index: 10; }
-    @keyframes scanLaser { 0% { top: 15%; opacity: 0.7; } 50% { top: 85%; opacity: 1; } 100% { top: 15%; opacity: 0.7; } }
     
     .btn-close-scanner { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #ef4444; color: white; font-weight: 600; font-size: 0.88rem; cursor: pointer; }
   </style>
@@ -183,7 +180,6 @@
 
 <div class="app-container">
 
-  <!-- โหมดสลับฟอร์ม -->
   <div class="mode-nav">
     <button type="button" class="mode-tab active-pc" id="tabModePC" onclick="switchAppMode('pc')">
       💻 สำรวจคอมพิวเตอร์
@@ -193,7 +189,6 @@
     </button>
   </div>
   
-  <!-- สถิติ Dashboard -->
   <div class="header-card" id="headerCard">
     <div class="app-header-top">
       <div>
@@ -237,7 +232,6 @@
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
   </div>
 
-  <!-- 🖥️ ฟอร์มสำรวจคอมพิวเตอร์ -->
   <div id="viewPCSection" style="display: flex; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir" onclick="openDirectoryModal('all')">
@@ -398,7 +392,6 @@
     </div>
   </div>
 
-  <!-- 🖨️ ฟอร์มสำรวจเครื่องพิมพ์ -->
   <div id="viewPrinterSection" style="display: none; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir printer-theme" onclick="openDirectoryModal('printer_all')">
@@ -528,7 +521,6 @@
   </div>
 </div>
 
-<!-- Dock เมนูด้านล่าง -->
 <div class="dock-bar">
   <div class="dock-container">
     <button class="btn-dock btn-dock-clear" type="button" id="btnClear" onclick="clearItemFields()">ล้างฟอร์ม</button>
@@ -537,7 +529,6 @@
   </div>
 </div>
 
-<!-- Modal สมุดผังรายการ -->
 <div id="directoryModal">
   <div class="dir-sheet">
     <div class="dir-header">
@@ -577,23 +568,22 @@
     </div>
     
     <div class="scanner-tools-bar">
-      <button type="button" class="btn-scan-tool" id="btnTorch" onclick="toggleTorch()">💡 เปิดไฟ</button>
-      <button type="button" class="btn-scan-tool" id="btnZoom" onclick="cycleZoom()">🔍 ซูม 1x</button>
-      <button type="button" class="btn-scan-tool" id="btnScanMode" onclick="toggleScanBox()">📐 แนวนอน (1D)</button>
+      <button type="button" class="btn-scan-tool" id="btnTorch" style="display:none;" onclick="toggleTorch()">💡 เปิดไฟ</button>
+      <button type="button" class="btn-scan-tool" onclick="triggerScanFile()">📁 ถ่ายรูป / เลือกภาพ</button>
     </div>
 
-    <div style="position:relative; width:100%; border-radius:12px; overflow:hidden;">
-      <div id="modalReader"></div>
-      <div class="scanner-laser" id="scannerLaser"></div>
+    <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#000;">
+      <div id="modalReader" style="width:100%; min-height:280px;"></div>
     </div>
     
     <div style="font-size:0.72rem; color:var(--slate-500);">
-      💡 ส่องบาร์โค้ดให้อยู่ในกรอบ • ที่มืดให้กด <b>💡 เปิดไฟ</b> • สติ๊กเกอร์เล็กให้กด <b>🔍 ซูม</b>
+      💡 ส่องบาร์โค้ดให้อยู่ในกรอบ • ที่มืดให้เปิดไฟ • หรือกด <b>📁 ถ่ายรูป</b> เพื่อใช้กล้องหลัก
     </div>
 
     <button type="button" class="btn-close-scanner" onclick="closeScanner()">❌ ปิดกล้อง</button>
   </div>
 </div>
+<input type="file" id="barcodeFileInput" accept="image/*" capture="environment" style="display:none" onchange="processBarcodeFile(event)">
 
 <script>
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHlPqJUomoY1EpBtm5iQVUVXsGHzSKYzMNxqgml1Jasby2_6-BAqXGCXIGa6BN9I6YIg/exec";
@@ -611,11 +601,9 @@
   let html5QrCode = null;
   let currentDirFilter = 'all';
 
-  // ตัวแปรกล้อง & สแกนเนอร์
-  let isTorchOn = false;
+  // ตัวแปรควบคุมกล้องและสถานะเครื่องมือ
   let currentVideoTrack = null;
-  let currentZoom = 1;
-  let currentBoxMode = 'wide';
+  let isTorchOn = false;
 
   function showToast(msg) {
     const t = document.getElementById("toast");
@@ -1170,68 +1158,74 @@
     }
   }
 
+  /* ฟังก์ชันเปิดกล้องสแกน (ทำงานร่วมกันได้ทั้ง Android Chrome และ iOS Safari) */
   async function openScanner(fieldId, title) {
     currentTargetField = fieldId;
-    document.getElementById('modalTitle').innerText = `📷 สแกน: ${title}`;
-    document.getElementById('scannerModal').style.display = 'flex';
-    try {
-      if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("modalReader", {
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true
-          },
-          verbose: false
-        });
-      }
-      
-      const cameraConfig = {
-        facingMode: "environment",
-        width: { min: 640, ideal: 1280, max: 1920 },
-        height: { min: 480, ideal: 720, max: 1080 }
-      };
-      
-      const scanConfig = {
-        fps: 25,
-        qrbox: getQrBoxDimensions()
-      };
-      
-      await html5QrCode.start(cameraConfig, scanConfig, onScanSuccess);
-      setTimeout(setupCameraTrack, 400);
-    } catch (err) {
-      console.warn("High-res failed, fallback:", err);
-      try {
-        await html5QrCode.start({ facingMode: "environment" }, { fps: 20 }, onScanSuccess);
-        setTimeout(setupCameraTrack, 400);
-      } catch(e) {
-        alert("กรุณาอนุญาตสิทธิ์กล้องในเบราว์เซอร์");
-        closeScanner();
-      }
+    const titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.innerText = `📷 สแกน: ${title}`;
+    
+    const modal = document.getElementById('scannerModal');
+    if (modal) modal.style.display = 'flex';
+
+    isTorchOn = false;
+    const torchBtn = document.getElementById('btnTorch');
+    if (torchBtn) { 
+      torchBtn.innerText = "💡 เปิดไฟ"; 
+      torchBtn.classList.remove('active'); 
+      torchBtn.style.display = 'none';
     }
-  }
 
-  function getQrBoxDimensions() {
-    return (viewfinderWidth, viewfinderHeight) => {
-      if (currentBoxMode === 'square') {
-        const size = Math.floor(Math.min(viewfinderWidth * 0.78, viewfinderHeight * 0.78, 260));
-        return { width: size, height: size };
-      } else if (currentBoxMode === 'full') {
-        return { width: Math.floor(viewfinderWidth * 0.96), height: Math.floor(viewfinderHeight * 0.88) };
-      } else {
-        const width = Math.floor(viewfinderWidth * 0.94);
-        const height = Math.floor(Math.min(viewfinderHeight * 0.65, 200));
-        return { width: Math.max(width, 280), height: Math.max(height, 140) };
-      }
-    };
-  }
+    // ล้าง DOM และอินสแตนซ์เก่าออกเพื่อป้องกันการชนกันของเธรดกล้อง
+    if (html5QrCode) {
+      try { if (html5QrCode.isScanning) await html5QrCode.stop(); } catch(e) {}
+      try { html5QrCode.clear(); } catch(e) {}
+      html5QrCode = null;
+    }
+    const readerDiv = document.getElementById("modalReader");
+    if (readerDiv) readerDiv.innerHTML = "";
 
-  function setupCameraTrack() {
-    currentVideoTrack = null;
-    const video = document.querySelector("#modalReader video");
-    if (video && video.srcObject) {
-      const tracks = video.srcObject.getVideoTracks();
-      if (tracks && tracks.length > 0) {
-        currentVideoTrack = tracks[0];
-      }
+    try {
+      html5QrCode = new Html5Qrcode("modalReader");
+
+      // ปรับขนาดกรอบสแกนอัตโนมัติให้สัดส่วนปลอดภัย ไม่ล้น Viewport
+      const scanConfig = {
+        fps: 15,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+          const w = Math.floor(viewfinderWidth * 0.85);
+          const h = Math.floor(Math.min(viewfinderHeight * 0.6, 200));
+          return {
+            width: Math.max(100, Math.min(w, viewfinderWidth - 10)),
+            height: Math.max(80, Math.min(h, viewfinderHeight - 10))
+          };
+        }
+      };
+
+      // ใช้มาตรฐาน facingMode: "environment" ตรงตาม W3C
+      await html5QrCode.start({ facingMode: "environment" }, scanConfig, onScanSuccess, () => {});
+
+      // ปรับแต่งการแสดงผลและตรวจจับฮาร์ดแวร์ไฟฉาย
+      setTimeout(() => {
+        const video = document.querySelector("#modalReader video");
+        if (video) {
+          video.setAttribute("playsinline", "true");
+          video.setAttribute("webkit-playsinline", "true");
+          video.setAttribute("muted", "true");
+          video.play().catch(() => {});
+
+          if (video.srcObject) {
+            const tracks = video.srcObject.getVideoTracks();
+            if (tracks && tracks.length > 0) {
+              currentVideoTrack = tracks[0];
+              const caps = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
+              if (caps.torch && torchBtn) torchBtn.style.display = 'inline-flex';
+            }
+          }
+        }
+      }, 400);
+
+    } catch (err) {
+      console.warn("Camera start error:", err);
+      showToast("⚠️ ไม่สามารถสตรีมกล้องได้ หรือสิทธิ์ถูกระงับ");
     }
   }
 
@@ -1256,71 +1250,33 @@
     }
   }
 
-  async function cycleZoom() {
-    if (!currentVideoTrack) return showToast("⚠️ กล้องยังไม่พร้อมทำงาน");
-    const caps = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
-    if (!caps.zoom) {
-      return showToast("⚠️ อุปกรณ์นี้ไม่รองรับการซูมผ่านเว็บ");
-    }
-    const minZ = caps.zoom.min || 1;
-    const maxZ = caps.zoom.max || 3;
-    
-    if (currentZoom === 1) currentZoom = 1.6;
-    else if (currentZoom === 1.6) currentZoom = 2.4;
-    else currentZoom = 1;
-    
-    const targetZ = Math.min(Math.max(currentZoom, minZ), maxZ);
-    try {
-      await currentVideoTrack.applyConstraints({
-        advanced: [{ zoom: targetZ }]
-      });
-      const zoomBtn = document.getElementById('btnZoom');
-      if (zoomBtn) {
-        zoomBtn.innerText = `🔍 ซูม ${currentZoom}x`;
-        if (currentZoom > 1) zoomBtn.classList.add('active'); else zoomBtn.classList.remove('active');
-      }
-    } catch(e) {
-      console.error(e);
-    }
-  }
+  /* ฟังก์ชันปิดกล้อง - สั่งปิด UI ทันทีเสมอ ป้องกันค้าง */
+  function closeScanner() {
+    const modal = document.getElementById('scannerModal');
+    if (modal) modal.style.display = 'none';
 
-  async function toggleScanBox() {
-    if (currentBoxMode === 'wide') currentBoxMode = 'square';
-    else if (currentBoxMode === 'square') currentBoxMode = 'full';
-    else currentBoxMode = 'wide';
-
-    const modeBtn = document.getElementById('btnScanMode');
-    if (modeBtn) {
-      if (currentBoxMode === 'wide') modeBtn.innerText = "📐 แนวนอน (1D)";
-      else if (currentBoxMode === 'square') modeBtn.innerText = "🔳 สี่เหลี่ยม (QR)";
-      else modeBtn.innerText = "🔲 เต็มจอ (Full)";
-    }
-
-    if (html5QrCode && html5QrCode.isScanning) {
-      await closeScanner();
-      const currentTitle = document.getElementById('modalTitle')?.innerText.replace('📷 สแกน: ', '') || 'บาร์โค้ด';
-      openScanner(currentTargetField, currentTitle);
-    }
-  }
-
-  async function closeScanner() {
     if (currentVideoTrack && isTorchOn) {
       try {
-        await currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] });
+        currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
       } catch(e) {}
       isTorchOn = false;
-      const torchBtn = document.getElementById('btnTorch');
-      if (torchBtn) {
-        torchBtn.innerText = "💡 เปิดไฟ";
-        torchBtn.classList.remove('active');
-      }
     }
-    if (html5QrCode && html5QrCode.isScanning) {
+
+    if (html5QrCode) {
+      const scanner = html5QrCode;
+      html5QrCode = null;
       try {
-        await html5QrCode.stop();
-      } catch(e) { console.warn(e); }
+        if (scanner.isScanning) {
+          scanner.stop().then(() => {
+            try { scanner.clear(); } catch(e) {}
+          }).catch(() => {
+            try { scanner.clear(); } catch(e) {}
+          });
+        } else {
+          try { scanner.clear(); } catch(e) {}
+        }
+      } catch(e) {}
     }
-    document.getElementById('scannerModal').style.display = 'none';
   }
 
   function onScanSuccess(decodedText) {
@@ -1338,6 +1294,46 @@
     }
     closeScanner();
     showToast(`✅ สแกนสำเร็จ: ${val.substring(0, 25)}`);
+  }
+
+  /* ฟังก์ชันสำรอง: ถ่ายรูปด้วยกล้องหลักหรือเลือกภาพจากแกลเลอรี */
+  function triggerScanFile() {
+    document.getElementById('barcodeFileInput').click();
+  }
+
+  async function processBarcodeFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    showToast("⏳ กำลังอ่านบาร์โค้ดจากภาพ...");
+    try {
+      const tempScanner = new Html5Qrcode("modalReader");
+      const text = await tempScanner.scanFile(file, true);
+      if (text) {
+        onScanSuccess(text);
+      }
+    } catch (err) {
+      processOCRDirectFile(file);
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function processOCRDirectFile(file) {
+    try {
+      const result = await Tesseract.recognize(file, 'eng+tha');
+      let text = (result.data.text || '').trim();
+      let clean = cleanData(text.replace(/\r?\n|\r/g, " "));
+      if (clean && document.getElementById(currentTargetField)) {
+        document.getElementById(currentTargetField).value = clean;
+        playBeep();
+        closeScanner();
+        showToast("✅ อ่านข้อความสำเร็จ");
+      } else {
+        showToast("❌ ไม่พบข้อความในภาพ");
+      }
+    } catch(e) {
+      showToast("❌ อ่านภาพไม่สำเร็จ");
+    }
   }
 
   function triggerOCR(fieldId) { 
