@@ -163,15 +163,24 @@
     .dir-old-spec { font-size: 0.7rem; color: var(--slate-500); }
     .dir-new-info { font-size: 0.65rem; color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-top: 3px; display: inline-block; }
     
-    /* Scanner Modal (Clean, Universal & Stable) */
-    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 999999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px; padding-top: 24px; backdrop-filter: blur(4px); }
-    .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 500px; padding: 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
-    #modalReader { width: 100%; min-height: 280px; max-height: 55vh; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
+    /* Scanner Modal (Smart Pro 1D/2D Scanner) */
+    #scannerModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 999999; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px; padding-top: 16px; backdrop-filter: blur(5px); }
+    .modal-sheet { background: #ffffff; border-radius: 18px; width: 100%; max-width: 500px; padding: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
+    #modalReader { width: 100%; min-height: 270px; max-height: 52vh; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
     #modalReader video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 10px; }
     
-    .scanner-tools-bar { display: flex; gap: 6px; justify-content: center; align-items: center; }
-    .btn-scan-tool { background: var(--slate-100); border: 1px solid var(--slate-300); color: var(--slate-700); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+    .scanner-tools-bar { display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .btn-scan-tool { background: var(--slate-100); border: 1px solid var(--slate-300); color: var(--slate-700); border-radius: 18px; padding: 5px 11px; font-size: 0.74rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
     .btn-scan-tool:active, .btn-scan-tool.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+    
+    /* ปุ่มซูมด่วนสำหรับสแกนบาร์โค้ดเล็ก */
+    .zoom-bar { display: none; gap: 6px; justify-content: center; align-items: center; background: var(--slate-50); padding: 4px 8px; border-radius: 99px; border: 1px solid var(--slate-200); }
+    .btn-zoom-step { border: none; background: transparent; color: var(--slate-600); font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; cursor: pointer; }
+    .btn-zoom-step.active { background: var(--primary); color: #ffffff; box-shadow: 0 2px 5px rgba(79,70,229,0.3); }
+
+    /* เส้นเลเซอร์นำสายตาสำหรับทาบกับบาร์โค้ดแท่ง */
+    .scanner-laser { position: absolute; top: 50%; left: 6%; width: 88%; height: 2px; background: linear-gradient(90deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,1) 50%, rgba(239,68,68,0.1) 100%); box-shadow: 0 0 10px #ef4444, 0 0 4px #ef4444; animation: laserPulse 1.8s infinite ease-in-out; pointer-events: none; z-index: 20; }
+    @keyframes laserPulse { 0% { transform: translateY(-28px); opacity: 0.65; } 50% { transform: translateY(28px); opacity: 1; } 100% { transform: translateY(-28px); opacity: 0.65; } }
     
     .btn-close-scanner { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #ef4444; color: white; font-weight: 600; font-size: 0.88rem; cursor: pointer; }
   </style>
@@ -232,6 +241,7 @@
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
   </div>
 
+  <!-- ฟอร์มสำรวจคอมพิวเตอร์ -->
   <div id="viewPCSection" style="display: flex; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir" onclick="openDirectoryModal('all')">
@@ -392,6 +402,7 @@
     </div>
   </div>
 
+  <!-- ฟอร์มสำรวจเครื่องพิมพ์ -->
   <div id="viewPrinterSection" style="display: none; flex-direction: column; gap: 8px;">
     <div class="card">
       <button type="button" class="btn-open-dir printer-theme" onclick="openDirectoryModal('printer_all')">
@@ -559,7 +570,7 @@
 <input type="file" id="ocrInput" accept="image/*" capture="environment" style="display:none" onchange="processOCR(event)">
 <div id="toast">แจ้งเตือน</div>
 
-<!-- Scanner Modal -->
+<!-- Scanner Modal (อัปเกรดสแกนบาร์โค้ดไว + ซูมอัตโนมัติ + สลับเลนส์) -->
 <div id="scannerModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -567,17 +578,31 @@
       <button type="button" onclick="closeScanner()" style="background:var(--slate-100); border:none; width:28px; height:28px; border-radius:50%; font-weight:700; cursor:pointer;">✕</button>
     </div>
     
+    <!-- แถบเครื่องมือช่วยสแกน -->
     <div class="scanner-tools-bar">
       <button type="button" class="btn-scan-tool" id="btnTorch" style="display:none;" onclick="toggleTorch()">💡 เปิดไฟ</button>
-      <button type="button" class="btn-scan-tool" onclick="triggerScanFile()">📁 ถ่ายรูป / เลือกภาพ</button>
+      <button type="button" class="btn-scan-tool" id="btnScanMode" onclick="toggleScanBox()">📐 กรอบแนวนอน</button>
+      <button type="button" class="btn-scan-tool" id="btnSwitchCam" style="display:none;" onclick="switchCameraLens()">🔄 สลับเลนส์</button>
+      <button type="button" class="btn-scan-tool" onclick="triggerScanFile()">📁 ถ่ายรูป</button>
     </div>
 
+    <!-- แถบปุ่มซูม (ช่วยให้สแกนบาร์โค้ด S/N เล็กๆ ได้จากระยะห่างที่โฟกัสชัด) -->
+    <div class="zoom-bar" id="zoomBar">
+      <span style="font-size:0.7rem; color:var(--slate-500); font-weight:600;">🔍 ระยะซูม:</span>
+      <button type="button" class="btn-zoom-step active" id="zStep1" onclick="applyZoomLevel(1)">1x</button>
+      <button type="button" class="btn-zoom-step" id="zStep15" onclick="applyZoomLevel(1.5)">1.5x</button>
+      <button type="button" class="btn-zoom-step" id="zStep2" onclick="applyZoomLevel(2)">2x</button>
+      <button type="button" class="btn-zoom-step" id="zStep3" onclick="applyZoomLevel(3)">3x</button>
+    </div>
+
+    <!-- จอกล้องพร้อมเส้นเลเซอร์สีแดง -->
     <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#000;">
-      <div id="modalReader" style="width:100%; min-height:280px;"></div>
+      <div id="modalReader" style="width:100%; min-height:270px;"></div>
+      <div class="scanner-laser" id="scannerLaser"></div>
     </div>
     
-    <div style="font-size:0.72rem; color:var(--slate-500);">
-      💡 ส่องบาร์โค้ดให้อยู่ในกรอบ • ที่มืดให้เปิดไฟ • หรือกด <b>📁 ถ่ายรูป</b> เพื่อใช้กล้องหลัก
+    <div style="font-size:0.71rem; color:var(--slate-600); line-height:1.35;">
+      🎯 <b>ทริคสแกนไว:</b> ทาบเส้นสีแดงผ่ากลางบาร์โค้ด • หากสติ๊กเกอร์เล็ก/เบลอ ให้กด <b>ซูม 1.5x หรือ 2x</b> แล้วถอยมือถือออกเล็กน้อยจะโฟกัสติดทันที
     </div>
 
     <button type="button" class="btn-close-scanner" onclick="closeScanner()">❌ ปิดกล้อง</button>
@@ -601,9 +626,12 @@
   let html5QrCode = null;
   let currentDirFilter = 'all';
 
-  // ตัวแปรควบคุมกล้องและสถานะเครื่องมือ
+  // ตัวแปรควบคุมกล้องและฟีเจอร์สแกนบาร์โค้ดแบบละเอียด
   let currentVideoTrack = null;
   let isTorchOn = false;
+  let currentBoxMode = 'wide'; // 'wide' (กรอบแนวนอน) หรือ 'full' (สแกนทั้งจอ)
+  let availableCameras = [];
+  let selectedCamIdx = -1;
 
   function showToast(msg) {
     const t = document.getElementById("toast");
@@ -1158,7 +1186,9 @@
     }
   }
 
-  /* ฟังก์ชันเปิดกล้องสแกน (ทำงานร่วมกันได้ทั้ง Android Chrome และ iOS Safari) */
+  // =============================================================
+  // 📷 ระบบสแกนบาร์โค้ด Pro (เร็ว คมชัด ซูมไว รองรับทั้ง iOS & Android)
+  // =============================================================
   async function openScanner(fieldId, title) {
     currentTargetField = fieldId;
     const titleEl = document.getElementById('modalTitle');
@@ -1168,14 +1198,18 @@
     if (modal) modal.style.display = 'flex';
 
     isTorchOn = false;
+    currentVideoTrack = null;
+
     const torchBtn = document.getElementById('btnTorch');
     if (torchBtn) { 
       torchBtn.innerText = "💡 เปิดไฟ"; 
       torchBtn.classList.remove('active'); 
       torchBtn.style.display = 'none';
     }
+    const zoomBar = document.getElementById('zoomBar');
+    if (zoomBar) zoomBar.style.display = 'none';
 
-    // ล้าง DOM และอินสแตนซ์เก่าออกเพื่อป้องกันการชนกันของเธรดกล้อง
+    // ล้างอินสแตนซ์กล้องเดิมก่อนเริ่มใหม่เสมอ
     if (html5QrCode) {
       try { if (html5QrCode.isScanning) await html5QrCode.stop(); } catch(e) {}
       try { html5QrCode.clear(); } catch(e) {}
@@ -1185,25 +1219,64 @@
     if (readerDiv) readerDiv.innerHTML = "";
 
     try {
-      html5QrCode = new Html5Qrcode("modalReader");
+      // เปิดใช้งาน Native Hardware BarcodeDetector + ระบุตระกูลบาร์โค้ดที่ใช้จริงเพื่อเพิ่มความเร็ว
+      const constructorConfig = {
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+        verbose: false
+      };
+      if (typeof Html5QrcodeSupportedFormats !== 'undefined') {
+        constructorConfig.formatsToSupport = [
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.CODE_93,
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.DATA_MATRIX,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.ITF
+        ];
+      }
 
-      // ปรับขนาดกรอบสแกนอัตโนมัติให้สัดส่วนปลอดภัย ไม่ล้น Viewport
-      const scanConfig = {
-        fps: 15,
-        qrbox: (viewfinderWidth, viewfinderHeight) => {
-          const w = Math.floor(viewfinderWidth * 0.85);
-          const h = Math.floor(Math.min(viewfinderHeight * 0.6, 200));
-          return {
-            width: Math.max(100, Math.min(w, viewfinderWidth - 10)),
-            height: Math.max(80, Math.min(h, viewfinderHeight - 10))
-          };
+      html5QrCode = new Html5Qrcode("modalReader", constructorConfig);
+
+      // ดึงรายการกล้องหลังเผื่อผู้ใช้ต้องการสลับเลนส์ (เช่น เลนส์หลัก กับ เลนส์ Macro)
+      try {
+        if (availableCameras.length === 0) {
+          const cams = await Html5Qrcode.getCameras();
+          if (cams && cams.length > 0) {
+            const backCams = cams.filter(c => /back|rear|environment|หลัง/i.test(c.label));
+            availableCameras = backCams.length > 0 ? backCams : cams;
+          }
         }
+        const switchBtn = document.getElementById('btnSwitchCam');
+        if (switchBtn) switchBtn.style.display = availableCameras.length > 1 ? 'inline-flex' : 'none';
+      } catch(e) {}
+
+      // ตั้งค่าการสแกน (FPS สูง + กรอบสแกนปลอดภัยไม่ล้นจอ)
+      const scanConfig = {
+        fps: 25,
+        disableFlip: false
       };
 
-      // ใช้มาตรฐาน facingMode: "environment" ตรงตาม W3C
-      await html5QrCode.start({ facingMode: "environment" }, scanConfig, onScanSuccess, () => {});
+      if (currentBoxMode === 'wide') {
+        scanConfig.qrbox = (viewfinderWidth, viewfinderHeight) => {
+          const w = Math.floor(viewfinderWidth * 0.90);
+          const h = Math.floor(Math.min(viewfinderHeight * 0.58, 190));
+          return {
+            width: Math.max(120, Math.min(w, viewfinderWidth - 12)),
+            height: Math.max(80, Math.min(h, viewfinderHeight - 12))
+          };
+        };
+      }
 
-      // ปรับแต่งการแสดงผลและตรวจจับฮาร์ดแวร์ไฟฉาย
+      // เลือกกล้องที่จะเปิด (ใช้ facingMode: "environment" เป็นค่าเริ่มต้นที่เสถียรที่สุด)
+      const cameraTarget = (selectedCamIdx >= 0 && availableCameras[selectedCamIdx])
+        ? availableCameras[selectedCamIdx].id
+        : { facingMode: "environment" };
+
+      await html5QrCode.start(cameraTarget, scanConfig, onScanSuccess, () => {});
+
+      // อัปเกรดความคมชัดเป็น Full HD + โฟกัสต่อเนื่อง + ซูมอัตโนมัติสำหรับ S/N
       setTimeout(() => {
         const video = document.querySelector("#modalReader video");
         if (video) {
@@ -1216,24 +1289,84 @@
             const tracks = video.srcObject.getVideoTracks();
             if (tracks && tracks.length > 0) {
               currentVideoTrack = tracks[0];
+              
+              // พยายามขอความละเอียดสูงขึ้นและเปิด Continuous Autofocus โดยไม่ทำให้กล้องค้าง
+              try {
+                currentVideoTrack.applyConstraints({
+                  width: { ideal: 1920 },
+                  height: { ideal: 1080 },
+                  advanced: [{ focusMode: "continuous" }]
+                }).catch(() => {});
+              } catch(e) {}
+
               const caps = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
-              if (caps.torch && torchBtn) torchBtn.style.display = 'inline-flex';
+              if (caps.torch && torchBtn) {
+                torchBtn.style.display = 'inline-flex';
+              }
+              if (caps.zoom && zoomBar) {
+                zoomBar.style.display = 'inline-flex';
+                // หากเป็นการสแกนช่อง S/N ให้ซูม 1.5x อัตโนมัติ ताकिไม่ต้องเอากล้องจ่อใกล้จนเบลอ
+                if (currentTargetField.startsWith('sn_') || currentTargetField === 'p_sn') {
+                  applyZoomLevel(1.5);
+                } else {
+                  applyZoomLevel(1);
+                }
+              }
             }
           }
         }
-      }, 400);
+      }, 350);
 
     } catch (err) {
       console.warn("Camera start error:", err);
-      showToast("⚠️ ไม่สามารถสตรีมกล้องได้ หรือสิทธิ์ถูกระงับ");
+      showToast("⚠️ ไม่สามารถเปิดกล้องได้ กรุณากดปุ่ม 📁 ถ่ายรูป แทน");
     }
+  }
+
+  async function applyZoomLevel(level) {
+    document.querySelectorAll('.btn-zoom-step').forEach(b => b.classList.remove('active'));
+    if (level === 1) document.getElementById('zStep1')?.classList.add('active');
+    if (level === 1.5) document.getElementById('zStep15')?.classList.add('active');
+    if (level === 2) document.getElementById('zStep2')?.classList.add('active');
+    if (level === 3) document.getElementById('zStep3')?.classList.add('active');
+
+    if (!currentVideoTrack) return;
+    try {
+      const caps = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
+      if (caps.zoom) {
+        const minZ = caps.zoom.min || 1;
+        const maxZ = caps.zoom.max || 4;
+        const targetZ = Math.min(Math.max(level, minZ), maxZ);
+        await currentVideoTrack.applyConstraints({ advanced: [{ zoom: targetZ }] });
+      }
+    } catch(e) {}
+  }
+
+  async function toggleScanBox() {
+    currentBoxMode = (currentBoxMode === 'wide') ? 'full' : 'wide';
+    const modeBtn = document.getElementById('btnScanMode');
+    if (modeBtn) {
+      modeBtn.innerText = (currentBoxMode === 'wide') ? "📐 กรอบแนวนอน" : "🔲 สแกนทั้งจอ";
+      if (currentBoxMode === 'full') modeBtn.classList.add('active');
+      else modeBtn.classList.remove('active');
+    }
+    const title = document.getElementById('modalTitle')?.innerText.replace('📷 สแกน: ', '') || 'บาร์โค้ด';
+    await openScanner(currentTargetField, title);
+  }
+
+  async function switchCameraLens() {
+    if (availableCameras.length <= 1) return;
+    selectedCamIdx = (selectedCamIdx + 1) % availableCameras.length;
+    showToast(`🔄 สลับเป็นเลนส์ที่ ${selectedCamIdx + 1}/${availableCameras.length}`);
+    const title = document.getElementById('modalTitle')?.innerText.replace('📷 สแกน: ', '') || 'บาร์โค้ด';
+    await openScanner(currentTargetField, title);
   }
 
   async function toggleTorch() {
     if (!currentVideoTrack) return showToast("⚠️ กล้องยังไม่พร้อมทำงาน");
     const caps = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
     if (!caps.torch) {
-      return showToast("⚠️ อุปกรณ์นี้ไม่รองรับเปิดไฟฉายผ่านเว็บ");
+      return showToast("⚠️ เลนส์นี้ไม่รองรับเปิดไฟฉาย");
     }
     isTorchOn = !isTorchOn;
     try {
@@ -1250,7 +1383,7 @@
     }
   }
 
-  /* ฟังก์ชันปิดกล้อง - สั่งปิด UI ทันทีเสมอ ป้องกันค้าง */
+  /* ฟังก์ชันปิดกล้อง - ซ่อนหน้าต่างทันที 100% ไม่ค้าง */
   function closeScanner() {
     const modal = document.getElementById('scannerModal');
     if (modal) modal.style.display = 'none';
@@ -1296,7 +1429,7 @@
     showToast(`✅ สแกนสำเร็จ: ${val.substring(0, 25)}`);
   }
 
-  /* ฟังก์ชันสำรอง: ถ่ายรูปด้วยกล้องหลักหรือเลือกภาพจากแกลเลอรี */
+  /* ฟังก์ชันสำรอง: ถ่ายรูปด้วยกล้องหลักของเครื่อง */
   function triggerScanFile() {
     document.getElementById('barcodeFileInput').click();
   }
